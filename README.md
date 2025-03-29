@@ -34,6 +34,14 @@ Use this command to generate the site's documentation
 
 The site can then be accessed at [`http://localhost:8080`](http://localhost:8080).
 
+Use this command to publish the site manually to the repository's GitHub pages:
+
+    mvn clean site site:stage scm-publish:publish-scm
+
+The site can then be accessed at [https://aowss.github.io/dddsample-core/](https://aowss.github.io/dddsample-core/).
+
+You should not have to do this since the pipeline is configured to publish the site on PR merge.
+
 ## How to run
 
 To start the app using the included application server and in-process HSQL database, run this command:

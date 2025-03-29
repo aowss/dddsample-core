@@ -7,7 +7,7 @@ on:
   pull_request:
     branches: [ "*" ]
   push:
-    branches: [ "master" ]
+    branches: [ "dev" ]
 
 jobs:
   build:
@@ -30,3 +30,5 @@ jobs:
       - name: Update dependency graph
         uses: advanced-security/maven-dependency-submission-action@v4
         continue-on-error: true # optional as this step consistently fails for forked repos by design
+      - name: Generate and deploy site
+        run: mvn -B site site:stage scm-publish:publish-scm
