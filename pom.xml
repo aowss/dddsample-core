@@ -73,7 +73,7 @@
     </licenses>
 
     <scm>
-        <developerConnection>scm:git:https://github.com/aowss/dddsample-core</developerConnection>
+        <developerConnection>scm:git:git@github.com:aowss/dddsample-core</developerConnection>
         <url>https://github.com/aowss/dddsample-core</url>
     </scm>
 
