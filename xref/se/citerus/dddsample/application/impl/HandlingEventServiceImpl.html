@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="" lang="">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>HandlingEventServiceImpl xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../apidocs/se/citerus/dddsample/application/impl/HandlingEventServiceImpl.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> se.citerus.dddsample.application.impl;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.slf4j.Logger;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   <strong class="jxr_keyword">import</strong> org.slf4j.LoggerFactory;
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> org.springframework.transaction.annotation.Transactional;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   <strong class="jxr_keyword">import</strong> se.citerus.dddsample.application.ApplicationEvents;
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">import</strong> se.citerus.dddsample.application.HandlingEventService;
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   <strong class="jxr_keyword">import</strong> se.citerus.dddsample.domain.model.cargo.TrackingId;
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>   <strong class="jxr_keyword">import</strong> se.citerus.dddsample.domain.model.handling.CannotCreateHandlingEventException;
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>  <strong class="jxr_keyword">import</strong> se.citerus.dddsample.domain.model.handling.HandlingEvent;
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>  <strong class="jxr_keyword">import</strong> se.citerus.dddsample.domain.model.handling.HandlingEventFactory;
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>  <strong class="jxr_keyword">import</strong> se.citerus.dddsample.domain.model.handling.HandlingEventRepository;
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  <strong class="jxr_keyword">import</strong> se.citerus.dddsample.domain.model.location.UnLocode;
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>  <strong class="jxr_keyword">import</strong> se.citerus.dddsample.domain.model.voyage.VoyageNumber;
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>  
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  <strong class="jxr_keyword">import</strong> java.lang.invoke.MethodHandles;
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>  <strong class="jxr_keyword">import</strong> java.time.Instant;
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>  
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="HandlingEventServiceImpl" href="../../../../../se/citerus/dddsample/application/impl/HandlingEventServiceImpl.html#HandlingEventServiceImpl">HandlingEventServiceImpl</a> <strong class="jxr_keyword">implements</strong> <a name="HandlingEventService" href="../../../../../se/citerus/dddsample/application/HandlingEventService.html#HandlingEventService">HandlingEventService</a> {
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>  
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="ApplicationEvents" href="../../../../../se/citerus/dddsample/application/ApplicationEvents.html#ApplicationEvents">ApplicationEvents</a> applicationEvents;
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="HandlingEventRepository" href="../../../../../se/citerus/dddsample/domain/model/handling/HandlingEventRepository.html#HandlingEventRepository">HandlingEventRepository</a> handlingEventRepository;
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">final</strong> <a name="HandlingEventFactory" href="../../../../../se/citerus/dddsample/domain/model/handling/HandlingEventFactory.html#HandlingEventFactory">HandlingEventFactory</a> handlingEventFactory;
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>    <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">static</strong> <strong class="jxr_keyword">final</strong> Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass());
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>    <strong class="jxr_keyword">public</strong> <a name="HandlingEventServiceImpl" href="../../../../../se/citerus/dddsample/application/impl/HandlingEventServiceImpl.html#HandlingEventServiceImpl">HandlingEventServiceImpl</a>(<strong class="jxr_keyword">final</strong> <a name="HandlingEventRepository" href="../../../../../se/citerus/dddsample/domain/model/handling/HandlingEventRepository.html#HandlingEventRepository">HandlingEventRepository</a> handlingEventRepository,
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>                                    <strong class="jxr_keyword">final</strong> <a name="ApplicationEvents" href="../../../../../se/citerus/dddsample/application/ApplicationEvents.html#ApplicationEvents">ApplicationEvents</a> applicationEvents,
+<a class="jxr_linenumber" name="L28" href="#L28">28</a>                                    <strong class="jxr_keyword">final</strong> <a name="HandlingEventFactory" href="../../../../../se/citerus/dddsample/domain/model/handling/HandlingEventFactory.html#HandlingEventFactory">HandlingEventFactory</a> handlingEventFactory) {
+<a class="jxr_linenumber" name="L29" href="#L29">29</a>      <strong class="jxr_keyword">this</strong>.handlingEventRepository = handlingEventRepository;
+<a class="jxr_linenumber" name="L30" href="#L30">30</a>      <strong class="jxr_keyword">this</strong>.applicationEvents = applicationEvents;
+<a class="jxr_linenumber" name="L31" href="#L31">31</a>      <strong class="jxr_keyword">this</strong>.handlingEventFactory = handlingEventFactory;
+<a class="jxr_linenumber" name="L32" href="#L32">32</a>    }
+<a class="jxr_linenumber" name="L33" href="#L33">33</a>  
+<a class="jxr_linenumber" name="L34" href="#L34">34</a>    @Override
+<a class="jxr_linenumber" name="L35" href="#L35">35</a>    @Transactional(rollbackFor = CannotCreateHandlingEventException.<strong class="jxr_keyword">class</strong>)
+<a class="jxr_linenumber" name="L36" href="#L36">36</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> registerHandlingEvent(<strong class="jxr_keyword">final</strong> Instant completionTime,
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>                                      <strong class="jxr_keyword">final</strong> <a name="TrackingId" href="../../../../../se/citerus/dddsample/domain/model/cargo/TrackingId.html#TrackingId">TrackingId</a> trackingId,
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>                                      <strong class="jxr_keyword">final</strong> <a name="VoyageNumber" href="../../../../../se/citerus/dddsample/domain/model/voyage/VoyageNumber.html#VoyageNumber">VoyageNumber</a> voyageNumber,
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>                                      <strong class="jxr_keyword">final</strong> <a name="UnLocode" href="../../../../../se/citerus/dddsample/domain/model/location/UnLocode.html#UnLocode">UnLocode</a> unLocode,
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>                                      <strong class="jxr_keyword">final</strong> HandlingEvent.Type type) <strong class="jxr_keyword">throws</strong> <a name="CannotCreateHandlingEventException" href="../../../../../se/citerus/dddsample/domain/model/handling/CannotCreateHandlingEventException.html#CannotCreateHandlingEventException">CannotCreateHandlingEventException</a> {
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>      <strong class="jxr_keyword">final</strong> Instant registrationTime = Instant.now();
+<a class="jxr_linenumber" name="L42" href="#L42">42</a>      <em class="jxr_comment">/* Using a factory to create a HandlingEvent (aggregate). This is where</em>
+<a class="jxr_linenumber" name="L43" href="#L43">43</a>  <em class="jxr_comment">       it is determined whether the incoming data, the attempt, actually is capable</em>
+<a class="jxr_linenumber" name="L44" href="#L44">44</a>  <em class="jxr_comment">       of representing a real handling event. */</em>
+<a class="jxr_linenumber" name="L45" href="#L45">45</a>      <strong class="jxr_keyword">final</strong> <a name="HandlingEvent" href="../../../../../se/citerus/dddsample/domain/model/handling/HandlingEvent.html#HandlingEvent">HandlingEvent</a> event = handlingEventFactory.createHandlingEvent(
+<a class="jxr_linenumber" name="L46" href="#L46">46</a>        registrationTime, completionTime, trackingId, voyageNumber, unLocode, type
+<a class="jxr_linenumber" name="L47" href="#L47">47</a>      );
+<a class="jxr_linenumber" name="L48" href="#L48">48</a>  
+<a class="jxr_linenumber" name="L49" href="#L49">49</a>      <em class="jxr_comment">/* Store the new handling event, which updates the persistent</em>
+<a class="jxr_linenumber" name="L50" href="#L50">50</a>  <em class="jxr_comment">       state of the handling event aggregate (but not the cargo aggregate -</em>
+<a class="jxr_linenumber" name="L51" href="#L51">51</a>  <em class="jxr_comment">       that happens asynchronously!)</em>
+<a class="jxr_linenumber" name="L52" href="#L52">52</a>  <em class="jxr_comment">     */</em>
+<a class="jxr_linenumber" name="L53" href="#L53">53</a>      handlingEventRepository.store(event);
+<a class="jxr_linenumber" name="L54" href="#L54">54</a>  
+<a class="jxr_linenumber" name="L55" href="#L55">55</a>      <em class="jxr_comment">/* Publish an event stating that a cargo has been handled. */</em>
+<a class="jxr_linenumber" name="L56" href="#L56">56</a>      applicationEvents.cargoWasHandled(event);
+<a class="jxr_linenumber" name="L57" href="#L57">57</a>  
+<a class="jxr_linenumber" name="L58" href="#L58">58</a>      logger.info(<span class="jxr_string">"Registered handling event: {}"</span>, event);
+<a class="jxr_linenumber" name="L59" href="#L59">59</a>    }
+<a class="jxr_linenumber" name="L60" href="#L60">60</a>  
+<a class="jxr_linenumber" name="L61" href="#L61">61</a>  }
+</pre>
+<hr/>
+<div id="footer">© 2025</div>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="" lang="">
+<head><meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+<title>AndSpecificationTest xref</title>
+<link type="text/css" rel="stylesheet" href="../../../../../stylesheet.css" />
+</head>
+<body>
+<div id="overview"><a href="../../../../../../testapidocs/se/citerus/dddsample/domain/shared/AndSpecificationTest.html">View Javadoc</a></div><pre>
+<a class="jxr_linenumber" name="L1" href="#L1">1</a>   <strong class="jxr_keyword">package</strong> se.citerus.dddsample.domain.shared;
+<a class="jxr_linenumber" name="L2" href="#L2">2</a>   
+<a class="jxr_linenumber" name="L3" href="#L3">3</a>   <strong class="jxr_keyword">import</strong> org.junit.jupiter.api.Test;
+<a class="jxr_linenumber" name="L4" href="#L4">4</a>   
+<a class="jxr_linenumber" name="L5" href="#L5">5</a>   <strong class="jxr_keyword">import</strong> <strong class="jxr_keyword">static</strong> org.assertj.core.api.Assertions.assertThat;
+<a class="jxr_linenumber" name="L6" href="#L6">6</a>   
+<a class="jxr_linenumber" name="L7" href="#L7">7</a>   <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">class</strong> <a name="AndSpecificationTest" href="../../../../../se/citerus/dddsample/domain/shared/AndSpecificationTest.html#AndSpecificationTest">AndSpecificationTest</a> {
+<a class="jxr_linenumber" name="L8" href="#L8">8</a>   
+<a class="jxr_linenumber" name="L9" href="#L9">9</a>     @Test
+<a class="jxr_linenumber" name="L10" href="#L10">10</a>    <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> testAndIsSatisifedBy() {
+<a class="jxr_linenumber" name="L11" href="#L11">11</a>      <a name="AlwaysTrueSpec" href="../../../../../se/citerus/dddsample/domain/shared/AlwaysTrueSpec.html#AlwaysTrueSpec">AlwaysTrueSpec</a> trueSpec = <strong class="jxr_keyword">new</strong> <a name="AlwaysTrueSpec" href="../../../../../se/citerus/dddsample/domain/shared/AlwaysTrueSpec.html#AlwaysTrueSpec">AlwaysTrueSpec</a>();
+<a class="jxr_linenumber" name="L12" href="#L12">12</a>      <a name="AlwaysFalseSpec" href="../../../../../se/citerus/dddsample/domain/shared/AlwaysFalseSpec.html#AlwaysFalseSpec">AlwaysFalseSpec</a> falseSpec = <strong class="jxr_keyword">new</strong> <a name="AlwaysFalseSpec" href="../../../../../se/citerus/dddsample/domain/shared/AlwaysFalseSpec.html#AlwaysFalseSpec">AlwaysFalseSpec</a>();
+<a class="jxr_linenumber" name="L13" href="#L13">13</a>  
+<a class="jxr_linenumber" name="L14" href="#L14">14</a>      AndSpecification&lt;Object&gt; andSpecification = <strong class="jxr_keyword">new</strong> AndSpecification&lt;Object&gt;(trueSpec, trueSpec);
+<a class="jxr_linenumber" name="L15" href="#L15">15</a>      assertThat(andSpecification.isSatisfiedBy(<strong class="jxr_keyword">new</strong> Object())).isTrue();
+<a class="jxr_linenumber" name="L16" href="#L16">16</a>  
+<a class="jxr_linenumber" name="L17" href="#L17">17</a>      andSpecification = <strong class="jxr_keyword">new</strong> AndSpecification&lt;Object&gt;(falseSpec, trueSpec);
+<a class="jxr_linenumber" name="L18" href="#L18">18</a>      assertThat(andSpecification.isSatisfiedBy(<strong class="jxr_keyword">new</strong> Object())).isFalse();
+<a class="jxr_linenumber" name="L19" href="#L19">19</a>  
+<a class="jxr_linenumber" name="L20" href="#L20">20</a>      andSpecification = <strong class="jxr_keyword">new</strong> AndSpecification&lt;Object&gt;(trueSpec, falseSpec);
+<a class="jxr_linenumber" name="L21" href="#L21">21</a>      assertThat(andSpecification.isSatisfiedBy(<strong class="jxr_keyword">new</strong> Object())).isFalse();
+<a class="jxr_linenumber" name="L22" href="#L22">22</a>  
+<a class="jxr_linenumber" name="L23" href="#L23">23</a>      andSpecification = <strong class="jxr_keyword">new</strong> AndSpecification&lt;Object&gt;(falseSpec, falseSpec);
+<a class="jxr_linenumber" name="L24" href="#L24">24</a>      assertThat(andSpecification.isSatisfiedBy(<strong class="jxr_keyword">new</strong> Object())).isFalse();
+<a class="jxr_linenumber" name="L25" href="#L25">25</a>  
+<a class="jxr_linenumber" name="L26" href="#L26">26</a>    }
+<a class="jxr_linenumber" name="L27" href="#L27">27</a>  }
+</pre>
+<hr/>
+<div id="footer">© 2025</div>
+</body>
+</html>
