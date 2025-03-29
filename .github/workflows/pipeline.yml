@@ -31,4 +31,6 @@ jobs:
         uses: advanced-security/maven-dependency-submission-action@v4
         continue-on-error: true # optional as this step consistently fails for forked repos by design
       - name: Generate and deploy site
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
         run: mvn -B site site:stage scm-publish:publish-scm
