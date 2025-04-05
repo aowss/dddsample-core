@@ -69,12 +69,20 @@
     </scm>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>24</java.version>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <commons-io.version>2.18.0</commons-io.version>
+        <plugin.surefire.version>3.5.3</plugin.surefire.version>
+        <plugin.compiler.version>3.14.0</plugin.compiler.version>
+        <plugin.site.version>3.21.0</plugin.site.version>
+        <plugin.javadoc.version>3.11.2</plugin.javadoc.version>
+        <plugin.jxr.version>3.6.0</plugin.jxr.version>
+        <plugin.surefire-report.version>3.5.3</plugin.surefire-report.version>
+        <plugin.jacoco.version>0.8.13</plugin.jacoco.version>
+        <plugin.checkstyle.version>3.6.0</plugin.checkstyle.version>
     </properties>
 
     <build>
@@ -86,17 +94,17 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.5.3</version>
+                <version>${plugin.surefire.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.14.0</version>
+                <version>${plugin.compiler.version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
-                <version>3.21.0</version>
+                <version>${plugin.site.version}</version>
             </plugin>
         </plugins>
     </build>
@@ -176,31 +184,31 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.11.2</version>
+                <version>${plugin.javadoc.version}</version>
             </plugin>
             <!-- Source code cross reference -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jxr-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${plugin.jxr.version}</version>
             </plugin>
             <!-- Test report -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>3.5.2</version>
+                <version>${plugin.surefire-report.version}</version>
             </plugin>
             <!-- Test coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>${plugin.jacoco.version}</version>
             </plugin>
             <!-- CheckStyle report -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>${plugin.checkstyle.version}</version>
                 <configuration>
                     <configLocation>src/main/config/checkstyle.xml</configLocation>
                     <!-- Java source code generated from WSDL -->
