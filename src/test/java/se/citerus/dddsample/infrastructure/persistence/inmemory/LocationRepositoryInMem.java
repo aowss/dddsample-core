@@ -10,7 +10,8 @@ import java.util.List;
 public class LocationRepositoryInMem implements LocationRepository {
 
   public Location find(UnLocode unLocode) {
-    for (Location location : SampleLocations.getAll()) {
+    var locations = SampleLocations.getAll();
+    for (Location location : locations) {
       if (location.unLocode().equals(unLocode)) {
         return location;
       }
