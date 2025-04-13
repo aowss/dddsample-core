@@ -48,7 +48,7 @@ public class CargoTrackingDTOConverter {
             case LOAD:
             case UNLOAD:
                 args = new Object[]{
-                        handlingEvent.voyage().voyageNumber().idString(),
+                        handlingEvent.voyage().voyageNumber().number(),
                         handlingEvent.location().name(),
                         convertTime(handlingEvent)
                 };
@@ -76,7 +76,7 @@ public class CargoTrackingDTOConverter {
     }
 
     private static String convertVoyageNumber(HandlingEvent handlingEvent) {
-        return handlingEvent.voyage().voyageNumber().idString();
+        return handlingEvent.voyage().voyageNumber().number();
     }
 
     private static String convertType(HandlingEvent handlingEvent) {
@@ -106,7 +106,7 @@ public class CargoTrackingDTOConverter {
                 args = new Object[]{delivery.lastKnownLocation().name()};
                 break;
             case ONBOARD_CARRIER:
-                args = new Object[]{delivery.currentVoyage().voyageNumber().idString()};
+                args = new Object[]{delivery.currentVoyage().voyageNumber().number()};
                 break;
             case CLAIMED:
             case NOT_RECEIVED:
@@ -138,11 +138,11 @@ public class CargoTrackingDTOConverter {
         HandlingEvent.Type type = activity.type();
         if (type.sameValueAs(HandlingEvent.Type.LOAD)) {
             return
-                    text + type.name().toLowerCase() + " cargo onto voyage " + activity.voyage().voyageNumber() +
+                    text + type.name().toLowerCase() + " cargo onto voyage " + activity.voyage().voyageNumber().number() +
                             " in " + activity.location().name();
         } else if (type.sameValueAs(HandlingEvent.Type.UNLOAD)) {
             return
-                    text + type.name().toLowerCase() + " cargo off of " + activity.voyage().voyageNumber() +
+                    text + type.name().toLowerCase() + " cargo off of " + activity.voyage().voyageNumber().number() +
                             " in " + activity.location().name();
         } else {
             return text + type.name().toLowerCase() + " cargo in " + activity.location().name();

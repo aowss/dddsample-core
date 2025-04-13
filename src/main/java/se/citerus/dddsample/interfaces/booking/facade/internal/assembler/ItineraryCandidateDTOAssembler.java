@@ -39,7 +39,7 @@ public class ItineraryCandidateDTOAssembler {
     final VoyageNumber voyageNumber = leg.voyage().voyageNumber();
     final UnLocode from = leg.loadLocation().unLocode();
     final UnLocode to = leg.unloadLocation().unLocode();
-    return new LegDTO(voyageNumber.idString(), from.unlocode(), to.unlocode(), leg.loadTime(), leg.unloadTime());
+    return new LegDTO(voyageNumber.number(), from.unlocode(), to.unlocode(), leg.loadTime(), leg.unloadTime());
   }
 
   /**

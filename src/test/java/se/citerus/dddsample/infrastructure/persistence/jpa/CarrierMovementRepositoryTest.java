@@ -28,7 +28,7 @@ public class CarrierMovementRepositoryTest {
     public void testFind() {
         Voyage voyage = voyageRepository.find(new VoyageNumber("0100S"));
         assertThat(voyage).isNotNull();
-        assertThat(voyage.voyageNumber().idString()).isEqualTo("0100S");
+        assertThat(voyage.voyageNumber().number()).isEqualTo("0100S");
     /* TODO adapt
     assertThat(carrierMovement.departureLocation()).isEqualTo(STOCKHOLM);
     assertThat(carrierMovement.arrivalLocation()).isEqualTo(HELSINKI);

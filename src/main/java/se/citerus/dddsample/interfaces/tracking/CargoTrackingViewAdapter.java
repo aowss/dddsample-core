@@ -84,7 +84,7 @@ public final class CargoTrackingViewAdapter {
         args = new Object[] {getDisplayText(delivery.lastKnownLocation())};
         break;
       case ONBOARD_CARRIER:
-        args = new Object[] {delivery.currentVoyage().voyageNumber().idString()};
+        args = new Object[] {delivery.currentVoyage().voyageNumber().number()};
         break;
       case CLAIMED:
       case NOT_RECEIVED:
@@ -195,7 +195,7 @@ public final class CargoTrackingViewAdapter {
      */
     public String getVoyageNumber() {
       final Voyage voyage = handlingEvent.voyage();
-      return voyage.voyageNumber().idString();
+      return voyage.voyageNumber().number();
     }
 
     /**
@@ -212,7 +212,7 @@ public final class CargoTrackingViewAdapter {
         case LOAD:
         case UNLOAD:
           args = new Object[] {
-            handlingEvent.voyage().voyageNumber().idString(),
+            handlingEvent.voyage().voyageNumber().number(),
             handlingEvent.location().name(),
             handlingEvent.completionTime()
           };
