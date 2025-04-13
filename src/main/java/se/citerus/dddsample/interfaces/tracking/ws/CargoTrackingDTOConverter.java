@@ -136,11 +136,11 @@ public class CargoTrackingDTOConverter {
 
         String text = "Next expected activity is to ";
         HandlingEvent.Type type = activity.type();
-        if (type.sameValueAs(HandlingEvent.Type.LOAD)) {
+        if (type.equals(HandlingEvent.Type.LOAD)) {
             return
                     text + type.name().toLowerCase() + " cargo onto voyage " + activity.voyage().voyageNumber().number() +
                             " in " + activity.location().name();
-        } else if (type.sameValueAs(HandlingEvent.Type.UNLOAD)) {
+        } else if (type.equals(HandlingEvent.Type.UNLOAD)) {
             return
                     text + type.name().toLowerCase() + " cargo off of " + activity.voyage().voyageNumber().number() +
                             " in " + activity.location().name();
