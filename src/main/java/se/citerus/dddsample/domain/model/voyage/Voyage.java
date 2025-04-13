@@ -35,7 +35,7 @@ public class Voyage implements DomainEntity<Voyage> {
   @Transient
   public static final Voyage NONE = new Voyage(new VoyageNumber(""), Schedule.EMPTY);
 
-    public Voyage(final VoyageNumber voyageNumber, final Schedule schedule) {
+  public Voyage(final VoyageNumber voyageNumber, final Schedule schedule) {
     Objects.requireNonNull(voyageNumber, "Voyage number is required");
     Objects.requireNonNull(schedule, "Schedule is required");
 
