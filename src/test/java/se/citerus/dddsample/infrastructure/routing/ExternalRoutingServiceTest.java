@@ -33,7 +33,7 @@ public class ExternalRoutingServiceTest {
     voyageRepository = mock(VoyageRepository.class);
     GraphTraversalService graphTraversalService = new GraphTraversalServiceImpl(new GraphDAOStub() {
       public List<String> listLocations() {
-        return List.of(TOKYO.unLocode().idString(), STOCKHOLM.unLocode().idString(), GOTHENBURG.unLocode().idString());
+        return List.of(TOKYO.unLocode().unlocode(), STOCKHOLM.unLocode().unlocode(), GOTHENBURG.unLocode().unlocode());
       }
 
       public void storeCarrierMovementId(String cmId, String from, String to) {

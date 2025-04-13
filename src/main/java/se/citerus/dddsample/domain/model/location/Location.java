@@ -43,7 +43,7 @@ public final class Location implements DomainEntity<Location> {
     Objects.requireNonNull(unLocode);
     Objects.requireNonNull(name);
     
-    this.unlocode = unLocode.idString();
+    this.unlocode = unLocode.unlocode();
     this.name = name;
   }
 

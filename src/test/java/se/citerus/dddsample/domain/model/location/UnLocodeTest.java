@@ -26,8 +26,8 @@ public class UnLocodeTest {
   }
 
   @Test
-  public void testIdString() {
-    assertThat(new UnLocode("AbcDe").idString()).isEqualTo("ABCDE");
+  public void testUnlocodeString() {
+    assertThat(new UnLocode("AbcDe").unlocode()).isEqualTo("ABCDE");
   }
 
   @Test
