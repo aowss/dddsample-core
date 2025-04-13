@@ -303,7 +303,7 @@ public class Delivery implements ValueObject<Delivery> {
 
   private boolean calculateUnloadedAtDestination(RouteSpecification routeSpecification) {
     return lastEvent != null &&
-      HandlingEvent.Type.UNLOAD.equals(lastEvent.type()) &&
+      HandlingEvent.Type.UNLOAD == lastEvent.type() &&
       routeSpecification.destination().sameIdentityAs(lastEvent.location());
   }
 
