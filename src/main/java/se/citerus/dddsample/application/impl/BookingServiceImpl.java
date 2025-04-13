@@ -41,7 +41,7 @@ public class BookingServiceImpl implements BookingService {
     Cargo cargo = cargoFactory.createCargo(originUnLocode, destinationUnLocode, arrivalDeadline);
 
     cargoRepository.store(cargo);
-    logger.info("Booked new cargo with tracking id {}", cargo.trackingId().idString());
+    logger.info("Booked new cargo with tracking id {}", cargo.trackingId().id());
 
     return cargo.trackingId();
   }

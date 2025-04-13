@@ -48,7 +48,7 @@ public record HandlingHistory(List<HandlingEvent> handlingEvents) {
      */
     public HandlingHistory filterOnCargo(TrackingId trackingId) {
         List<HandlingEvent> events = handlingEvents.stream()
-                .filter(he -> he.cargo().trackingId().sameValueAs(trackingId))
+                .filter(he -> he.cargo().trackingId().equals(trackingId))
                 .collect(Collectors.toList());
         return new HandlingHistory(events);
     }

@@ -93,7 +93,7 @@ public class CargoTrackingDTOConverter {
     }
 
     private static String convertTrackingId(Cargo cargo) {
-        return cargo.trackingId().idString();
+        return cargo.trackingId().id();
     }
 
     protected static String convertStatusText(Cargo cargo, MessageSource messageSource, Locale locale) {

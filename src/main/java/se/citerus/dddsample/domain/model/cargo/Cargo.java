@@ -73,7 +73,7 @@ public class Cargo implements DomainEntity<Cargo> {
     Objects.requireNonNull(trackingId, "Tracking ID is required");
     Objects.requireNonNull(routeSpecification, "Route specification is required");
 
-    this.trackingId = trackingId.idString();
+    this.trackingId = trackingId.id();
     // Cargo origin never changes, even if the route specification changes.
     // However, at creation, cargo origin can be derived from the initial route specification.
     this.origin = routeSpecification.origin();
@@ -87,7 +87,7 @@ public class Cargo implements DomainEntity<Cargo> {
   public Cargo(TrackingId trackingId, RouteSpecification routeSpecification, Itinerary itinerary) {
     Objects.requireNonNull(trackingId, "Tracking ID is required");
     Objects.requireNonNull(routeSpecification, "Route specification is required");
-    this.trackingId = trackingId.idString();
+    this.trackingId = trackingId.id();
     this.origin = routeSpecification.origin();
     this.routeSpecification = routeSpecification;
     this.itinerary = itinerary.legs();

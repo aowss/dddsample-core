@@ -126,8 +126,8 @@ public class CargoRepositoryTest {
         flush();
 
         Cargo result = entityManager.createQuery(
-            String.format("from Cargo c where c.trackingId = '%s'", trackingId.idString()), Cargo.class).getSingleResult();
-        assertThat(result.trackingId().idString()).isEqualTo("AAA");
+            String.format("from Cargo c where c.trackingId = '%s'", trackingId.id()), Cargo.class).getSingleResult();
+        assertThat(result.trackingId().id()).isEqualTo("AAA");
         assertThat(result.routeSpecification().origin().id()).isEqualTo(origin.id());
         assertThat(result.routeSpecification().destination().id()).isEqualTo(destination.id());
 

@@ -115,7 +115,7 @@ public final class CargoTrackingViewAdapter {
    * @return Cargo tracking id.
    */
   public String getTrackingId() {
-    return cargo.trackingId().idString();
+    return cargo.trackingId().id();
   }
 
   public String getEta() {
