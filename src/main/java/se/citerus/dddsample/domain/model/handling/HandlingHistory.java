@@ -1,7 +1,6 @@
 package se.citerus.dddsample.domain.model.handling;
 
 import se.citerus.dddsample.domain.model.cargo.TrackingId;
-import se.citerus.dddsample.domain.shared.ValueObject;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -9,13 +8,11 @@ import java.util.stream.Collectors;
 /**
  * The handling history of a cargo.
  */
-public class HandlingHistory implements ValueObject<HandlingHistory> {
-
-    private final List<HandlingEvent> handlingEvents;
+public record HandlingHistory(List<HandlingEvent> handlingEvents) {
 
     public static final HandlingHistory EMPTY = new HandlingHistory(Collections.<HandlingEvent>emptyList());
 
-    public HandlingHistory(Collection<HandlingEvent> handlingEvents) {
+    public HandlingHistory(List<HandlingEvent> handlingEvents) {
         Objects.requireNonNull(handlingEvents, "Handling events are required");
 
         this.handlingEvents = new ArrayList<>(handlingEvents);
@@ -54,25 +51,6 @@ public class HandlingHistory implements ValueObject<HandlingHistory> {
                 .filter(he -> he.cargo().trackingId().sameValueAs(trackingId))
                 .collect(Collectors.toList());
         return new HandlingHistory(events);
-    }
-
-    @Override
-    public boolean sameValueAs(HandlingHistory other) {
-        return other != null && this.handlingEvents.equals(other.handlingEvents);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        final HandlingHistory other = (HandlingHistory) o;
-        return sameValueAs(other);
-    }
-
-    @Override
-    public int hashCode() {
-        return handlingEvents.hashCode();
     }
 
     private static final Comparator<HandlingEvent> BY_COMPLETION_TIME_COMPARATOR =
