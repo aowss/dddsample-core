@@ -12,7 +12,6 @@ se.citerus.dddsample.domain.model.location
 se.citerus.dddsample.domain.model.voyage
 se.citerus.dddsample.domain.service
 se.citerus.dddsample.domain.shared
-se.citerus.dddsample.domain.shared.experimental
 se.citerus.dddsample.infrastructure.messaging.jms
 se.citerus.dddsample.infrastructure.persistence.hibernate
 se.citerus.dddsample.infrastructure.persistence.jpa
