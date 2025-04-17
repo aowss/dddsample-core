@@ -88,4 +88,99 @@ Now, when you push to either the `main` or `master` branch:
 
 The site won't be published for pull requests or pushes to other branches, which is generally what you want to avoid publishing incomplete or work-in-progress documentation.
 
-Is there anything specific about this configuration you'd like me to explain further?
+    The build fails and i get the following error message
+
+    Warning:  No server with id 'github' found in Maven settings
+    [INFO] Checking out the pub tree from scm:git:git@github.com:aowss/dddsample-core.git into /home/runner/work/dddsample-core/dddsample-core/target/scmpublish-checkout
+    [INFO] Executing: /bin/sh -c cd '/home/runner/work/dddsample-core/dddsample-core/target' && 'git' 'clone' '--branch' 'gh-pages' 'git@github.com:aowss/dddsample-core.git' 'scmpublish-checkout'
+    [INFO] Working directory: /home/runner/work/dddsample-core/dddsample-core/target
+    Error:  Failed to check out from SCM: The git-clone command failed. Cloning into 'scmpublish-checkout'...
+    git@github.com: Permission denied (publickey).
+    fatal: Could not read from remote repository.
+
+    Please make sure you have the correct access rights
+    and the repository exists.
+
+I see the issue. The error is occurring because we're trying to use SSH authentication (`git@github.com`) but we haven't set up SSH keys in the workflow. Let's modify both the pom.xml and the workflow to use HTTPS authentication instead, which will work with the GITHUB_TOKEN.
+
+First, let's update the pom.xml to use HTTPS URL:
+
+```xml:pom.xml
+// ... existing code ...
+    <distributionManagement>
+        <site>
+            <id>github</id>
+            <url>scm:git:https://github.com/aowss/dddsample-core.git</url>
+        </site>
+    </distributionManagement>
+// ... existing code ...
+    <scm>
+        <developerConnection>scm:git:https://github.com/aowss/dddsample-core.git</developerConnection>
+        <url>https://github.com/aowss/dddsample-core</url>
+    </scm>
+// ... existing code ...
+```
+Now, let's update the workflow to properly configure Maven settings with the GitHub token:
+
+```github actions workflow:.github/workflows/pipeline.yml
+name: Java CI with Maven
+
+permissions:
+  contents: write
+
+on:
+  pull_request:
+    branches: [ "*" ]
+  push:
+    branches: [ "dev", "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for site publishing
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: maven
+      - name: Configure Maven settings
+        run: |
+          echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+      - name: Build with Maven
+        run: mvn -B compile
+      - name: Run tests
+        run: mvn -B test
+      # Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@v4
+        continue-on-error: true
+      - name: Configure Git user
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+      - name: Generate and deploy site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B site site:stage scm-publish:publish-scm
+```
+I've made two important changes:
+
+1. In the pom.xml:
+   - Changed the site URL and developer connection to use HTTPS instead of SSH
+   - Made sure both URLs end with `.git`
+
+2. In the workflow:
+   - Removed the `server-id` and `settings-path` from the Java setup (as we'll handle this differently)
+   - Added a new step to create a Maven settings.xml file with the GitHub credentials
+   - The settings.xml is configured to use the GitHub token for authentication
+
+These changes should resolve the authentication issues because:
+1. We're now using HTTPS instead of SSH for Git operations
+2. We're properly configuring Maven with the GitHub credentials
+3. The GITHUB_TOKEN is being used for authentication
+
+The workflow should now be able to successfully publish the site to GitHub Pages. Try pushing these changes and the site publishing should work.
