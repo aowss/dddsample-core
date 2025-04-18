@@ -37,15 +37,7 @@ jobs:
         run: |
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git config --global user.name "github-actions[bot]"
-      - name: Generate site
-        run: mvn -B clean site site:stage
-      - name: List generated site content
-        run: |
-          echo "Contents of target/staging:"
-          ls -la target/staging/
-      - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          folder: target/staging
-          branch: gh-pages
-          clean: true
+      - name: Generate and deploy site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B site site:stage scm-publish:publish-scm
