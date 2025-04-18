@@ -1,0 +1,692 @@
+@startuml
+interface se.citerus.dddsample.infrastructure.persistence.jpa.VoyageRepositoryJPA {
+~ Voyage find(VoyageNumber)
+~ Voyage findByVoyageNumber(String)
+~ void store(Voyage)
+}
+
+class se.citerus.dddsample.interfaces.booking.facade.internal.assembler.ItineraryCandidateDTOAssembler {
++ RouteCandidateDTO toDTO(Itinerary)
+# LegDTO toLegDTO(Leg)
++ Itinerary fromDTO(RouteCandidateDTO,VoyageRepository,LocationRepository)
+}
+
+class se.citerus.dddsample.infrastructure.messaging.jms.HandlingEventRegistrationAttemptConsumer {
++ void onMessage(Message)
+}
+
+class se.citerus.dddsample.interfaces.booking.facade.internal.assembler.CargoRoutingDTOAssembler {
++ CargoRoutingDTO toDTO(Cargo)
+}
+
+class se.citerus.dddsample.domain.model.handling.UnknownCargoException {
++ String getMessage()
+}
+
+class se.citerus.dddsample.domain.model.cargo.TrackingId {
++ String idString()
++ boolean equals(Object)
++ int hashCode()
++ boolean sameValueAs(TrackingId)
++ String toString()
+}
+
+class se.citerus.dddsample.interfaces.handling.HandlingEventRegistrationAttempt {
++ Instant getCompletionTime()
++ TrackingId getTrackingId()
++ VoyageNumber getVoyageNumber()
++ HandlingEvent.Type getType()
++ UnLocode getUnLocode()
++ Instant getRegistrationTime()
++ String toString()
+}
+
+class se.citerus.dddsample.interfaces.booking.facade.internal.assembler.LocationDTOAssembler {
++ LocationDTO toDTO(Location)
++ List<LocationDTO> toDTOList(List<Location>)
+}
+
+interface se.citerus.dddsample.domain.model.cargo.CargoRepository {
+~ Cargo find(TrackingId)
+~ List<Cargo> getAll()
+~ void store(Cargo)
+~ TrackingId nextTrackingId()
+}
+
+class se.citerus.dddsample.domain.model.handling.HandlingHistory {
++ List<HandlingEvent> distinctEventsByCompletionTime()
++ HandlingEvent mostRecentlyCompletedEvent()
++ HandlingHistory filterOnCargo(TrackingId)
++ boolean sameValueAs(HandlingHistory)
++ boolean equals(Object)
++ int hashCode()
+}
+
+class se.citerus.dddsample.domain.model.voyage.VoyageNumber {
++ boolean equals(Object)
++ int hashCode()
++ boolean sameValueAs(VoyageNumber)
++ String toString()
++ String idString()
+}
+
+class se.citerus.dddsample.application.impl.BookingServiceImpl {
++ TrackingId bookNewCargo(UnLocode,UnLocode,Instant)
++ List<Itinerary> requestPossibleRoutesForCargo(TrackingId)
++ void assignCargoToRoute(Itinerary,TrackingId)
++ void changeDestination(TrackingId,UnLocode)
+}
+
+interface se.citerus.dddsample.domain.shared.ValueObject {
+~ boolean sameValueAs(T)
+}
+
+class se.citerus.dddsample.domain.model.handling.UnknownLocationException {
++ String getMessage()
+}
+
+class se.citerus.dddsample.infrastructure.messaging.jms.SimpleLoggingConsumer {
++ void onMessage(Message)
+}
+
+class se.citerus.dddsample.infrastructure.messaging.jms.CargoHandledConsumer {
++ void onMessage(Message)
+}
+
+class se.citerus.dddsample.domain.model.cargo.HandlingActivity {
++ HandlingEvent.Type type()
++ Location location()
++ Voyage voyage()
++ boolean sameValueAs(HandlingActivity)
++ int hashCode()
++ boolean equals(Object)
+}
+
+interface se.citerus.dddsample.domain.shared.DomainEvent {
+~ boolean sameEventAs(T)
+}
+
+class se.citerus.dddsample.interfaces.booking.facade.dto.RouteCandidateDTO {
++ List<LegDTO> getLegs()
+}
+
+'class se.citerus.dddsample.infrastructure.sampledata.SampleLocations {
+'+ {static} List<Location> getAll()
+'+ {static} Location lookup(UnLocode)
+'}
+
+class se.citerus.dddsample.domain.model.cargo.CargoFactory {
++ Cargo createCargo(UnLocode,UnLocode,Instant)
+}
+
+interface se.citerus.dddsample.domain.service.RoutingService {
+~ List<Itinerary> fetchRoutesForSpecification(RouteSpecification)
+}
+
+class se.citerus.dddsample.interfaces.tracking.TrackCommandValidator {
++ boolean supports(Class<?>)
++ void validate(Object,Errors)
+}
+
+class se.citerus.dddsample.infrastructure.messaging.jms.InfrastructureMessagingJmsConfig {
++ MessageConsumer cargoHandledConsumer(Session,Destination,CargoInspectionService)
++ MessageConsumer handlingEventRegistrationAttemptConsumer(Session,Destination,HandlingEventService)
++ MessageConsumer misdirectedCargoConsumer(Session,Destination)
++ MessageConsumer deliveredCargoConsumer(Session,Destination)
++ MessageConsumer rejectedRegistrationAttemptsConsumer(Session,Destination)
++ Destination cargoHandledQueue()
++ Destination misdirectedCargoQueue()
++ Destination deliveredCargoQueue()
++ Destination handlingEventRegistrationAttemptQueue()
++ Destination rejectedRegistrationAttemptsQueue()
++ DefaultJmsListenerContainerFactory listenerContainerFactory(ConnectionFactory)
++ ConnectionFactory jmsConnectionFactory()
++ JmsOperations jmsOperations(ConnectionFactory)
++ Connection connection(ConnectionFactory)
++ Session session(Connection)
++ ApplicationEvents applicationEvents(JmsOperations,Destination,Destination,Destination,Destination,Destination)
+}
+
+interface se.citerus.dddsample.interfaces.handling.ws.HandlingReportService {
+~ ResponseEntity<?> submitReport(HandlingReport)
+}
+
+interface se.citerus.dddsample.infrastructure.persistence.jpa.HandlingEventRepositoryJPA {
+~ void store(HandlingEvent)
+~ HandlingHistory lookupHandlingHistoryOfCargo(TrackingId)
+~ List<HandlingEvent> getHandlingHistoryOfCargo(String)
+}
+
+interface se.citerus.dddsample.application.BookingService {
+~ TrackingId bookNewCargo(UnLocode,UnLocode,Instant)
+~ List<Itinerary> requestPossibleRoutesForCargo(TrackingId)
+~ void assignCargoToRoute(Itinerary,TrackingId)
+~ void changeDestination(TrackingId,UnLocode)
+}
+
+class se.citerus.dddsample.domain.model.location.Location {
++ UnLocode unLocode()
++ String name()
++ String code()
++ long id()
++ boolean equals(Object)
++ boolean sameIdentityAs(Location)
++ int hashCode()
++ String toString()
+}
+
+abstract class se.citerus.dddsample.domain.shared.AbstractSpecification {
++ {abstract}boolean isSatisfiedBy(T)
++ Specification<T> and(Specification<T>)
++ Specification<T> or(Specification<T>)
++ Specification<T> not(Specification<T>)
+}
+
+class se.citerus.dddsample.domain.model.cargo.Cargo {
++ TrackingId trackingId()
++ Location origin()
++ Delivery delivery()
++ long id()
++ Itinerary itinerary()
++ RouteSpecification routeSpecification()
++ void specifyNewRoute(RouteSpecification)
++ void assignToRoute(Itinerary)
++ void deriveDeliveryProgress(HandlingHistory)
++ boolean sameIdentityAs(Cargo)
++ boolean equals(Object)
++ int hashCode()
++ String toString()
+}
+
+class se.citerus.dddsample.interfaces.handling.file.UploadDirectoryScanner {
++ void run()
++ void afterPropertiesSet()
+}
+
+class se.citerus.dddsample.interfaces.tracking.ws.CargoTrackingDTOConverter {
++ {static} CargoTrackingDTO convert(Cargo,List<HandlingEvent>,MessageSource,Locale)
+# {static} String convertDescription(HandlingEvent,MessageSource,Locale)
+# {static} String convertStatusText(Cargo,MessageSource,Locale)
+# {static} String convertNextExpectedActivity(Cargo)
+}
+
+class se.citerus.dddsample.interfaces.tracking.CargoTrackingController {
++ String index(Map<String,Object>)
+}
+
+class se.citerus.dddsample.interfaces.tracking.TrackCommand {
++ String getTrackingId()
++ void setTrackingId(String)
++ String toString()
+}
+
+class se.citerus.dddsample.domain.shared.OrSpecification {
++ boolean isSatisfiedBy(T)
+}
+
+interface se.citerus.dddsample.domain.model.location.LocationRepository {
+~ Location find(UnLocode)
+~ List<Location> getAll()
+~ Location store(Location)
+}
+
+class se.citerus.dddsample.domain.model.voyage.Schedule {
++ List<CarrierMovement> carrierMovements()
++ boolean sameValueAs(Schedule)
++ boolean equals(Object)
++ int hashCode()
+}
+
+class se.citerus.dddsample.interfaces.InterfacesApplicationContext {
++ MessageSource messageSource()
++ FixedLocaleResolver localeResolver()
++ CargoTrackingRestService cargoTrackingRestService(CargoRepository,HandlingEventRepository,MessageSource)
++ TrackCommandValidator trackCommandValidator()
++ BookingServiceFacade bookingServiceFacade(BookingService,LocationRepository,CargoRepository,VoyageRepository)
++ UploadDirectoryScanner uploadDirectoryScanner(ApplicationEvents)
++ void addInterceptors(InterceptorRegistry)
++ ThreadPoolTaskScheduler myScheduler(UploadDirectoryScanner)
+}
+
+class se.citerus.dddsample.interfaces.tracking.CargoTrackingViewAdapter {
++ List<HandlingEventViewAdapter> getEvents()
++ String getStatusText()
++ String getDestination()
++ String getOrigin()
++ String getTrackingId()
++ String getEta()
++ String getNextExpectedActivity()
++ boolean isMisdirected()
+}
+
+class se.citerus.dddsample.interfaces.tracking.CargoTrackingViewAdapter$HandlingEventViewAdapter {
++ String getLocation()
++ String getTime()
++ String getType()
++ String getVoyageNumber()
++ boolean isExpected()
++ String getDescription()
+}
+
+'class se.citerus.dddsample.infrastructure.sampledata.SampleVoyages {
+'+ {static} List<Voyage> getAll()
+'+ {static} Voyage lookup(VoyageNumber)
+'}
+
+class se.citerus.dddsample.domain.model.cargo.Itinerary {
++ List<Leg> legs()
++ boolean isExpected(HandlingEvent)
+~ Location initialDepartureLocation()
+~ Location finalArrivalLocation()
+~ Instant finalArrivalDate()
+~ Leg lastLeg()
++ boolean sameValueAs(Itinerary)
++ boolean equals(Object)
++ int hashCode()
+}
+
+class se.citerus.dddsample.interfaces.booking.facade.dto.LegDTO {
++ String getVoyageNumber()
++ String getFrom()
++ String getTo()
++ Instant getLoadTime()
++ Instant getUnloadTime()
+}
+
+interface se.citerus.dddsample.application.ApplicationEvents {
+~ void cargoWasHandled(HandlingEvent)
+~ void cargoWasMisdirected(Cargo)
+~ void cargoHasArrived(Cargo)
+~ void receivedHandlingEventRegistrationAttempt(HandlingEventRegistrationAttempt)
+}
+
+interface se.citerus.dddsample.infrastructure.persistence.jpa.CargoRepositoryJPA {
+~ Cargo find(TrackingId)
+~ Cargo findByTrackingId(String)
+~ void store(Cargo)
+~ List<Cargo> getAll()
+~ String nextTrackingIdString()
+~ TrackingId nextTrackingId()
+}
+
+enum se.citerus.dddsample.domain.model.cargo.TransportStatus {
++  NOT_RECEIVED
++  IN_PORT
++  ONBOARD_CARRIER
++  CLAIMED
++  UNKNOWN
++ boolean sameValueAs(TransportStatus)
+}
+
+
+class se.citerus.dddsample.domain.model.voyage.Voyage {
++ VoyageNumber voyageNumber()
++ Schedule schedule()
++ int hashCode()
++ boolean equals(Object)
++ boolean sameIdentityAs(Voyage)
++ String toString()
+}
+
+class se.citerus.dddsample.domain.model.voyage.Voyage$Builder {
++ Builder addMovement(Location,Instant,Instant)
++ Voyage build()
+}
+
+'class se.citerus.dddsample.infrastructure.sampledata.SampleDataGenerator {
+'# void generate()
+'+ void loadHibernateData(TransactionTemplate,HandlingEventFactory)
+'+ {static} Instant offset(int)
+'}
+
+interface se.citerus.dddsample.domain.shared.Specification {
+~ boolean isSatisfiedBy(T)
+~ Specification<T> and(Specification<T>)
+~ Specification<T> or(Specification<T>)
+~ Specification<T> not(Specification<T>)
+}
+
+class se.citerus.dddsample.domain.shared.NotSpecification {
++ boolean isSatisfiedBy(T)
+}
+
+interface se.citerus.dddsample.domain.shared.DomainEntity {
+~ boolean sameIdentityAs(T)
+}
+
+class se.citerus.dddsample.interfaces.booking.facade.dto.CargoRoutingDTO {
++ String getTrackingId()
++ String getOrigin()
++ String getFinalDestination()
++ void addLeg(String,String,String,Instant,Instant)
++ List<LegDTO> getLegs()
++ boolean isMisrouted()
++ boolean isRouted()
++ ZonedDateTime getArrivalDeadline()
+}
+
+class se.citerus.dddsample.infrastructure.routing.ExternalRoutingService {
++ List<Itinerary> fetchRoutesForSpecification(RouteSpecification)
+}
+
+class se.citerus.dddsample.domain.model.handling.CannotCreateHandlingEventException {
+}
+interface se.citerus.dddsample.infrastructure.persistence.jpa.LocationRepositoryJPA {
+~ Location find(UnLocode)
+~ Location findByUnLoCode(String)
+~ List<Location> getAll()
+~ Location store(Location)
+}
+
+class se.citerus.dddsample.domain.model.cargo.Delivery {
+~ Delivery updateOnRouting(RouteSpecification,Itinerary)
+~ {static} Delivery derivedFrom(RouteSpecification,Itinerary,HandlingHistory)
++ TransportStatus transportStatus()
++ Location lastKnownLocation()
++ Voyage currentVoyage()
++ boolean isMisdirected()
++ Instant estimatedTimeOfArrival()
++ HandlingActivity nextExpectedActivity()
++ boolean isUnloadedAtDestination()
++ RoutingStatus routingStatus()
++ Instant calculatedAt()
++ boolean sameValueAs(Delivery)
++ boolean equals(Object)
++ int hashCode()
+}
+
+class se.citerus.dddsample.interfaces.tracking.ws.HandlingEventDTO {
+}
+class se.citerus.dddsample.domain.model.handling.HandlingEventFactory {
++ HandlingEvent createHandlingEvent(Instant,Instant,TrackingId,VoyageNumber,UnLocode,HandlingEvent.Type)
+}
+
+class se.citerus.dddsample.domain.model.cargo.Leg {
++ Voyage voyage()
++ Location loadLocation()
++ Location unloadLocation()
++ Instant loadTime()
++ Instant unloadTime()
++ boolean sameValueAs(Leg)
++ boolean equals(Object)
++ int hashCode()
+}
+
+class se.citerus.dddsample.interfaces.booking.web.RouteAssignmentCommand {
++ String getTrackingId()
++ void setTrackingId(String)
++ List<LegCommand> getLegs()
++ void setLegs(List<LegCommand>)
+}
+
+class se.citerus.dddsample.interfaces.booking.web.RouteAssignmentCommand$LegCommand {
++ String getVoyageNumber()
++ void setVoyageNumber(String)
++ String getFromUnLocode()
++ void setFromUnLocode(String)
++ String getToUnLocode()
++ void setToUnLocode(String)
++ Instant getFromDate()
++ void setFromDate(String)
++ Instant getToDate()
++ void setToDate(String)
+}
+
+interface se.citerus.dddsample.domain.model.voyage.VoyageRepository {
+~ Voyage find(VoyageNumber)
+~ void store(Voyage)
+}
+
+class se.citerus.dddsample.interfaces.booking.web.CargoAdminController {
++ String registration(HttpServletRequest,HttpServletResponse,Map<String,Object>)
++ void register(HttpServletRequest,HttpServletResponse,RegistrationCommand)
++ String list(HttpServletRequest,HttpServletResponse,Map<String,Object>)
++ String show(HttpServletRequest,HttpServletResponse,Map<String,Object>)
++ String selectItinerary(HttpServletRequest,HttpServletResponse,Map<String,Object>)
++ void assignItinerary(HttpServletRequest,HttpServletResponse,RouteAssignmentCommand)
++ String pickNewDestination(HttpServletRequest,HttpServletResponse,Map<String,Object>)
++ void changeDestination(HttpServletRequest,HttpServletResponse)
+}
+
+interface se.citerus.dddsample.application.CargoInspectionService {
+~ void inspectCargo(TrackingId)
+}
+
+class se.citerus.dddsample.interfaces.handling.HandlingReportParser {
++ {static} UnLocode parseUnLocode(String)
++ {static} TrackingId parseTrackingId(String)
++ {static} VoyageNumber parseVoyageNumber(String)
++ {static} Instant parseDate(String)
++ {static} HandlingEvent.Type parseEventType(String)
++ {static} Instant parseCompletionTime(LocalDateTime)
++ {static} List<HandlingEventRegistrationAttempt> parse(HandlingReport)
++ {static} List<TrackingId> parseTrackingIds(List<String>)
+}
+
+class se.citerus.dddsample.application.util.DateUtils {
++ {static} Instant toDate(String)
++ {static} Instant toDate(String,String)
+}
+
+interface se.citerus.dddsample.domain.model.handling.HandlingEventRepository {
+~ void store(HandlingEvent)
+~ HandlingHistory lookupHandlingHistoryOfCargo(TrackingId)
+}
+
+class se.citerus.dddsample.domain.model.voyage.CarrierMovement {
++ Location departureLocation()
++ Location arrivalLocation()
++ Instant departureTime()
++ Instant arrivalTime()
++ boolean equals(Object)
++ int hashCode()
++ boolean sameValueAs(CarrierMovement)
+}
+
+class se.citerus.dddsample.interfaces.booking.facade.dto.LocationDTO {
++ String getUnLocode()
++ String getName()
+}
+
+class se.citerus.dddsample.interfaces.handling.ws.HandlingReport {
++ LocalDateTime getCompletionTime()
++ void setCompletionTime(LocalDateTime)
++ List<String> getTrackingIds()
++ void setTrackingIds(List<String>)
++ String getType()
++ void setType(String)
++ String getUnLocode()
++ void setUnLocode(String)
++ String getVoyageNumber()
++ void setVoyageNumber(String)
+}
+
+class se.citerus.dddsample.application.impl.CargoInspectionServiceImpl {
++ void inspectCargo(TrackingId)
+}
+
+class se.citerus.dddsample.Application {
++ {static} void main(String[])
+}
+
+class se.citerus.dddsample.interfaces.handling.ws.HandlingReportServiceImpl {
++ ResponseEntity<?> submitReport(HandlingReport)
+}
+
+class se.citerus.dddsample.domain.model.cargo.RouteSpecification {
++ Location origin()
++ Location destination()
++ Instant arrivalDeadline()
++ boolean isSatisfiedBy(Itinerary)
++ boolean sameValueAs(RouteSpecification)
++ boolean equals(Object)
++ int hashCode()
+}
+
+enum se.citerus.dddsample.domain.model.cargo.RoutingStatus {
++  NOT_ROUTED
++  ROUTED
++  MISROUTED
++ boolean sameValueAs(RoutingStatus)
+}
+
+
+class se.citerus.dddsample.config.DDDSampleApplicationContext {
++ CargoFactory cargoFactory()
++ BookingService bookingService(CargoFactory,RoutingService)
++ CargoInspectionService cargoInspectionService()
++ HandlingEventService handlingEventService(HandlingEventFactory)
++ HandlingEventFactory handlingEventFactory()
++ RoutingService routingService()
+'+ SampleDataGenerator sampleDataGenerator(CargoRepository,VoyageRepository,LocationRepository,HandlingEventRepository,PlatformTransactionManager)
+}
+
+class se.citerus.dddsample.domain.model.location.UnLocode {
++ String idString()
++ boolean equals(Object)
++ int hashCode()
++ boolean sameValueAs(UnLocode)
++ String toString()
+}
+
+class se.citerus.dddsample.application.impl.HandlingEventServiceImpl {
++ void registerHandlingEvent(Instant,TrackingId,VoyageNumber,UnLocode,HandlingEvent.Type)
+}
+
+class se.citerus.dddsample.domain.model.handling.UnknownVoyageException {
++ String getMessage()
+}
+
+interface se.citerus.dddsample.application.HandlingEventService {
+~ void registerHandlingEvent(Instant,TrackingId,VoyageNumber,UnLocode,HandlingEvent.Type)
+}
+
+class se.citerus.dddsample.interfaces.booking.web.RegistrationCommand {
++ String getOriginUnlocode()
++ void setOriginUnlocode(String)
++ String getDestinationUnlocode()
++ void setDestinationUnlocode(String)
++ String getArrivalDeadline()
++ void setArrivalDeadline(String)
+}
+
+interface se.citerus.dddsample.interfaces.booking.facade.BookingServiceFacade {
+~ String bookNewCargo(String,String,Instant)
+~ CargoRoutingDTO loadCargoForRouting(String)
+~ void assignCargoToRoute(String,RouteCandidateDTO)
+~ void changeDestination(String,String)
+~ List<RouteCandidateDTO> requestPossibleRoutesForCargo(String)
+~ List<LocationDTO> listShippingLocations()
+~ List<CargoRoutingDTO> listAllCargos()
+}
+
+class se.citerus.dddsample.infrastructure.messaging.jms.JmsApplicationEventsImpl {
++ void cargoWasHandled(HandlingEvent)
++ void cargoWasMisdirected(Cargo)
++ void cargoHasArrived(Cargo)
++ void receivedHandlingEventRegistrationAttempt(HandlingEventRegistrationAttempt)
+}
+
+class se.citerus.dddsample.domain.model.handling.HandlingEvent {
++ Type type()
++ Voyage voyage()
++ Instant completionTime()
++ Instant registrationTime()
++ Location location()
++ Cargo cargo()
++ long id()
++ boolean equals(Object)
++ boolean sameEventAs(HandlingEvent)
++ int hashCode()
++ String toString()
+}
+
+enum se.citerus.dddsample.domain.model.handling.Type {
++  LOAD
++  UNLOAD
++  RECEIVE
++  CLAIM
++  CUSTOMS
++ boolean requiresVoyage()
++ boolean prohibitsVoyage()
++ boolean sameValueAs(Type)
+}
+
+
+class se.citerus.dddsample.interfaces.tracking.ws.CargoTrackingRestService {
++ ResponseEntity<CargoTrackingDTO> trackCargo(HttpServletRequest,String)
+}
+
+class se.citerus.dddsample.domain.shared.AndSpecification {
++ boolean isSatisfiedBy(T)
+}
+
+class se.citerus.dddsample.interfaces.tracking.ws.CargoTrackingDTO {
+}
+class se.citerus.dddsample.interfaces.booking.facade.internal.BookingServiceFacadeImpl {
++ List<LocationDTO> listShippingLocations()
++ String bookNewCargo(String,String,Instant)
++ CargoRoutingDTO loadCargoForRouting(String)
++ void assignCargoToRoute(String,RouteCandidateDTO)
++ void changeDestination(String,String)
++ List<CargoRoutingDTO> listAllCargos()
++ List<RouteCandidateDTO> requestPossibleRoutesForCargo(String)
+}
+
+
+'org.springframework.data.repository.CrudRepository <|-- se.citerus.dddsample.infrastructure.persistence.jpa.VoyageRepositoryJPA
+se.citerus.dddsample.domain.model.voyage.VoyageRepository <|-- se.citerus.dddsample.infrastructure.persistence.jpa.VoyageRepositoryJPA
+'jakarta.jms.MessageListener <|.. se.citerus.dddsample.infrastructure.messaging.jms.HandlingEventRegistrationAttemptConsumer
+se.citerus.dddsample.domain.model.handling.CannotCreateHandlingEventException <|-- se.citerus.dddsample.domain.model.handling.UnknownCargoException
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.cargo.TrackingId
+'java.io.Serializable <|.. se.citerus.dddsample.interfaces.handling.HandlingEventRegistrationAttempt
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.handling.HandlingHistory
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.voyage.VoyageNumber
+se.citerus.dddsample.application.BookingService <|.. se.citerus.dddsample.application.impl.BookingServiceImpl
+'java.io.Serializable <|-- se.citerus.dddsample.domain.shared.ValueObject
+se.citerus.dddsample.domain.model.handling.CannotCreateHandlingEventException <|-- se.citerus.dddsample.domain.model.handling.UnknownLocationException
+'jakarta.jms.MessageListener <|.. se.citerus.dddsample.infrastructure.messaging.jms.SimpleLoggingConsumer
+'jakarta.jms.MessageListener <|.. se.citerus.dddsample.infrastructure.messaging.jms.CargoHandledConsumer
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.cargo.HandlingActivity
+'java.io.Serializable <|.. se.citerus.dddsample.interfaces.booking.facade.dto.RouteCandidateDTO
+'org.springframework.validation.Validator <|.. se.citerus.dddsample.interfaces.tracking.TrackCommandValidator
+'org.springframework.data.repository.CrudRepository <|-- se.citerus.dddsample.infrastructure.persistence.jpa.HandlingEventRepositoryJPA
+se.citerus.dddsample.domain.model.handling.HandlingEventRepository <|-- se.citerus.dddsample.infrastructure.persistence.jpa.HandlingEventRepositoryJPA
+se.citerus.dddsample.domain.shared.DomainEntity <|.. se.citerus.dddsample.domain.model.location.Location
+se.citerus.dddsample.domain.shared.Specification <|.. se.citerus.dddsample.domain.shared.AbstractSpecification
+se.citerus.dddsample.domain.shared.DomainEntity <|.. se.citerus.dddsample.domain.model.cargo.Cargo
+'org.springframework.beans.factory.InitializingBean <|.. se.citerus.dddsample.interfaces.handling.file.UploadDirectoryScanner
+'java.util.TimerTask <|-- se.citerus.dddsample.interfaces.handling.file.UploadDirectoryScanner
+se.citerus.dddsample.domain.shared.AbstractSpecification <|-- se.citerus.dddsample.domain.shared.OrSpecification
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.voyage.Schedule
+'org.springframework.web.servlet.config.annotation.WebMvcConfigurer <|.. se.citerus.dddsample.interfaces.InterfacesApplicationContext
+se.citerus.dddsample.interfaces.tracking.CargoTrackingViewAdapter +.. se.citerus.dddsample.interfaces.tracking.CargoTrackingViewAdapter$HandlingEventViewAdapter
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.cargo.Itinerary
+'java.io.Serializable <|.. se.citerus.dddsample.interfaces.booking.facade.dto.LegDTO
+'org.springframework.data.repository.CrudRepository <|-- se.citerus.dddsample.infrastructure.persistence.jpa.CargoRepositoryJPA
+se.citerus.dddsample.domain.model.cargo.CargoRepository <|-- se.citerus.dddsample.infrastructure.persistence.jpa.CargoRepositoryJPA
+se.citerus.dddsample.domain.shared.DomainEntity <|.. se.citerus.dddsample.domain.model.voyage.Voyage
+se.citerus.dddsample.domain.model.voyage.Voyage +.. se.citerus.dddsample.domain.model.voyage.Voyage$Builder
+se.citerus.dddsample.domain.shared.AbstractSpecification <|-- se.citerus.dddsample.domain.shared.NotSpecification
+'java.io.Serializable <|.. se.citerus.dddsample.interfaces.booking.facade.dto.CargoRoutingDTO
+se.citerus.dddsample.domain.service.RoutingService <|.. se.citerus.dddsample.infrastructure.routing.ExternalRoutingService
+se.citerus.dddsample.domain.model.handling.Exception <|-- se.citerus.dddsample.domain.model.handling.CannotCreateHandlingEventException
+'org.springframework.data.repository.CrudRepository <|-- se.citerus.dddsample.infrastructure.persistence.jpa.LocationRepositoryJPA
+se.citerus.dddsample.domain.model.location.LocationRepository <|-- se.citerus.dddsample.infrastructure.persistence.jpa.LocationRepositoryJPA
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.cargo.Delivery
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.cargo.Leg
+se.citerus.dddsample.interfaces.booking.web.RouteAssignmentCommand +.. se.citerus.dddsample.interfaces.booking.web.RouteAssignmentCommand$LegCommand
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.voyage.CarrierMovement
+'java.io.Serializable <|.. se.citerus.dddsample.interfaces.booking.facade.dto.LocationDTO
+se.citerus.dddsample.application.CargoInspectionService <|.. se.citerus.dddsample.application.impl.CargoInspectionServiceImpl
+se.citerus.dddsample.interfaces.handling.ws.HandlingReportService <|.. se.citerus.dddsample.interfaces.handling.ws.HandlingReportServiceImpl
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.cargo.RouteSpecification
+se.citerus.dddsample.domain.shared.AbstractSpecification <|-- se.citerus.dddsample.domain.model.cargo.RouteSpecification
+se.citerus.dddsample.domain.shared.ValueObject <|.. se.citerus.dddsample.domain.model.location.UnLocode
+se.citerus.dddsample.application.HandlingEventService <|.. se.citerus.dddsample.application.impl.HandlingEventServiceImpl
+se.citerus.dddsample.domain.model.handling.CannotCreateHandlingEventException <|-- se.citerus.dddsample.domain.model.handling.UnknownVoyageException
+se.citerus.dddsample.application.ApplicationEvents <|.. se.citerus.dddsample.infrastructure.messaging.jms.JmsApplicationEventsImpl
+se.citerus.dddsample.domain.shared.DomainEvent <|.. se.citerus.dddsample.domain.model.handling.HandlingEvent
+se.citerus.dddsample.domain.shared.AbstractSpecification <|-- se.citerus.dddsample.domain.shared.AndSpecification
+se.citerus.dddsample.interfaces.booking.facade.BookingServiceFacade <|.. se.citerus.dddsample.interfaces.booking.facade.internal.BookingServiceFacadeImpl
+@enduml
