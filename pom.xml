@@ -15,7 +15,16 @@
     <description>This application shows a few key concepts of
         Domain Driven Design implemented in Enterprise Java.
     </description>
-    <url>http://dddsample.sourceforge.net</url>
+    <url>https://aowss.github.io/dddsample-core</url>
+
+    <distributionManagement>
+        <site>
+            <id>github</id>
+            <url>scm:git:https://github.com/aowss/dddsample-core.git</url>
+        </site>
+    </distributionManagement>
+
+    <ciManagement/>
 
     <developers>
         <developer>
@@ -64,8 +73,8 @@
     </licenses>
 
     <scm>
-        <developerConnection>scm:git:https://github.com/citerus/dddsample-core</developerConnection>
-        <url>https://github.com/citerus/dddsample-core</url>
+        <developerConnection>scm:git:https://github.com/aowss/dddsample-core.git</developerConnection>
+        <url>https://github.com/aowss/dddsample-core</url>
     </scm>
 
     <properties>
@@ -97,6 +106,30 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
                 <version>3.21.0</version>
+                <configuration>
+                    <skipDeploy>true</skipDeploy>
+                    <outputDirectory>${project.build.directory}/staging</outputDirectory>
+                    <relativizeDecorationLinks>false</relativizeDecorationLinks>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>2.0.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-publish-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <scmBranch>gh-pages</scmBranch>
+                    <content>${project.build.directory}/staging</content>
+                    <checkinComment>Publishing Maven site for ${project.artifactId}:${project.version}</checkinComment>
+                    <skipDeletedFiles>true</skipDeletedFiles>
+                    <pubScmUrl>scm:git:https://github.com/aowss/dddsample-core.git</pubScmUrl>
+                </configuration>
             </plugin>
         </plugins>
     </build>
