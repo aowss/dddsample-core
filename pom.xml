@@ -15,7 +15,7 @@
     <description>This application shows a few key concepts of
         Domain Driven Design implemented in Enterprise Java.
     </description>
-    <url>https://github.com/aowss/dddsample-core</url>
+    <url>https://aowss.github.io/dddsample-core</url>
 
     <distributionManagement>
         <site>
@@ -109,6 +109,7 @@
                 <configuration>
                     <skipDeploy>true</skipDeploy>
                     <outputDirectory>${project.build.directory}/staging</outputDirectory>
+                    <relativizeDecorationLinks>false</relativizeDecorationLinks>
                 </configuration>
                 <dependencies>
                     <dependency>

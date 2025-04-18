@@ -257,3 +257,111 @@ mvn clean site site:stage
 ```
 This will generate the site in your target/staging directory, which is what will be published to GitHub Pages.
 
+    Even though when i run the `mvn clean site site:stage` command and check in `target/staging` i see the right `index.html`, the GitHub pages site is still showing the ReadMe.md file
+
+Let's debug this issue. First, let's check if the GitHub Pages settings are correct. The site might be configured to use the root directory of the gh-pages branch instead of looking for the index.html file.
+
+Let's modify our workflow to:
+1. Check what's being published
+2. Ensure the files are in the root of the gh-pages branch
+
+```github actions workflow:.github/workflows/pipeline.yml
+name: Java CI with Maven
+
+permissions:
+  contents: write
+
+on:
+  pull_request:
+    branches: [ "*" ]
+  push:
+    branches: [ "dev", "main", "master" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for site publishing
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: maven
+      - name: Configure Maven settings
+        run: |
+          echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+      - name: Build with Maven
+        run: mvn -B compile
+      - name: Run tests
+        run: mvn -B test
+      - name: Update dependency graph
+        uses: advanced-security/maven-dependency-submission-action@v4
+        continue-on-error: true
+      - name: Configure Git user
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+      - name: Generate site
+        run: mvn -B clean site site:stage
+      - name: List generated site content
+        run: |
+          echo "Contents of target/staging:"
+          ls -la target/staging/
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: target/staging
+          branch: gh-pages
+          clean: true
+```
+I've made a significant change to the workflow:
+
+1. Split the site generation and deployment into separate steps for better visibility
+2. Added a step to list the contents of the staging directory so we can see what's being generated
+3. Replaced the Maven SCM publish plugin deployment with the GitHub Pages Deploy Action, which is more reliable and gives us better control over the deployment
+
+This change should:
+1. Generate the site as before
+2. Show us exactly what files are being generated (so we can debug if needed)
+3. Deploy the exact contents of target/staging to the root of the gh-pages branch
+
+Let's also update the pom.xml to ensure we're not accidentally using any relative paths that might cause issues:
+
+```xml:pom.xml
+// ... existing code ...
+    <url>https://aowss.github.io/dddsample-core</url>
+// ... existing code ...
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.21.0</version>
+                <configuration>
+                    <skipDeploy>true</skipDeploy>
+                    <outputDirectory>${project.build.directory}/staging</outputDirectory>
+                    <relativizeDecorationLinks>false</relativizeDecorationLinks>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.apache.maven.doxia</groupId>
+                        <artifactId>doxia-module-markdown</artifactId>
+                        <version>2.0.0</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+// ... existing code ...
+```
+I've made these changes:
+1. Updated the project URL to point to the GitHub Pages URL instead of the repository URL
+2. Added `relativizeDecorationLinks>false</relativizeDecorationLinks>` to prevent path issues in the generated site
+
+These changes should ensure that:
+1. The site is generated correctly with proper paths
+2. The contents are deployed directly to the root of the gh-pages branch
+3. GitHub Pages serves the index.html instead of the README.md
+
+Try pushing these changes. The workflow will now show us what files are being generated and will deploy them directly to GitHub Pages. This should resolve the issue with the README being shown instead of the Maven site.
+
+After the workflow runs, you should see the proper Maven site at `https://aowss.github.io/dddsample-core/`. If you still see the README, please share the output of the "List generated site content" step from the workflow run, and we can further debug from there.

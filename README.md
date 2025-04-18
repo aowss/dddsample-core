@@ -36,7 +36,7 @@ The site can then be accessed at [`http://localhost:8080`](http://localhost:8080
 
 Use this command to publish the site manually to the repository's GitHub pages:
 
-    mvn clean site site:stage scm-publish:publish-scm
+    ./mvnw clean site site:stage scm-publish:publish-scm
 
 The site can then be accessed at [https://aowss.github.io/dddsample-core/](https://aowss.github.io/dddsample-core/).
 
