@@ -1,0 +1,39 @@
+name: Generate and Deploy Site
+
+permissions:
+  contents: write
+
+on:
+  pull_request:
+    branches: [ "*" ]
+    paths:
+      - 'src/site/**'
+  push:
+    branches: [ "dev", "main", "master" ]
+    paths:
+      - 'src/site/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for site publishing
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: '23'
+          distribution: 'temurin'
+          cache: maven
+      - name: Configure Maven settings
+        run: |
+          echo "<settings><servers><server><id>github</id><username>${{ github.actor }}</username><password>${{ secrets.GITHUB_TOKEN }}</password></server></servers></settings>" > ~/.m2/settings.xml
+      - name: Configure Git user
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
+      - name: Generate and deploy site
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: mvn -B site site:stage scm-publish:publish-scm
