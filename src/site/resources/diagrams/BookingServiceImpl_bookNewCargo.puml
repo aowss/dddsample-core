@@ -5,6 +5,7 @@ skinparam sequenceMessageAlign center
 
 participant "BookingServiceImpl" as bs #lightgreen
 participant "CargoFactory" as cf #lightpink
+participant "Cargo" as c #lightpink
 participant "CargoRepositoryJPA" as cr #lightblue
 
 [-> bs: bookNewCargo(originUnLocode,\ndestinationUnLocode,\narrivalDeadline)
@@ -12,6 +13,8 @@ activate bs #lightgreen
 
 bs -> cf: createCargo(originUnLocode,\ndestinationUnLocode,\narrivalDeadline)
 activate cf #lightpink
+create c
+cf -> c: new
 cf --> bs: cargo
 deactivate cf
 
