@@ -5,6 +5,7 @@ skinparam sequenceMessageAlign center
 
 participant "BookingServiceImpl" as bs #lightgreen
 participant "CargoRepositoryJPA" as cr #lightblue
+participant "Cargo" as c #lightpink
 participant "ExternalRoutingService" as rs #lightblue
 participant "GraphTraversalService" as gts #lightblue
 participant "VoyageRepositoryJPA" as vr #lightblue
@@ -21,10 +22,10 @@ activate cr #lightblue
 cr --> bs: cargo
 deactivate cr
 
-bs -> cargo: routeSpecification()
-activate cargo #lightpink
-cargo --> bs: specification
-deactivate cargo
+bs -> c: routeSpecification()
+activate c #lightpink
+c --> bs: specification
+deactivate c
 
 bs -> rs: fetchRoutesForSpecification(specification)
 activate rs #lightblue

@@ -1724,3 +1724,114 @@ I've updated the `BookingServiceImpl_requestPossibleRoutesForCargo` diagram to s
 
 The diagram now shows the complete translation process between the domain model and the external routing service's API, maintaining the color scheme to clearly show which layer each component belongs to.
 
+* Correct mistake
+
+  In the `BookingServiceImpl_requestPossibleRoutesForCargo.puml`, `cargo` is wrongly shown in grey with a lowercase `c`.
+
+Ah yes, you're right. I need to properly declare the `Cargo` participant and use the correct color. Let me fix that:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_requestPossibleRoutesForCargo.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "Cargo" as c #lightpink
+participant "ExternalRoutingService" as rs #lightblue
+participant "GraphTraversalService" as gts #lightblue
+participant "VoyageRepositoryJPA" as vr #lightblue
+participant "LocationRepositoryJPA" as lr #lightblue
+participant "RouteSpecification" as rspec #lightpink
+participant "Itinerary" as itin #lightpink
+participant "Leg" as leg #lightpink
+
+[-> bs: requestPossibleRoutesForCargo(trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+cr --> bs: cargo
+deactivate cr
+
+bs -> c: routeSpecification()
+activate c #lightpink
+c --> bs: specification
+deactivate c
+
+bs -> rs: fetchRoutesForSpecification(specification)
+activate rs #lightblue
+
+rs -> rspec: origin()
+activate rspec #lightpink
+rspec --> rs: origin
+deactivate rspec
+
+rs -> rspec: destination()
+activate rspec #lightpink
+rspec --> rs: destination
+deactivate rspec
+
+rs -> rspec: arrivalDeadline()
+activate rspec #lightpink
+rspec --> rs: deadline
+deactivate rspec
+
+rs -> gts: findShortestPath(origin.unLocode(),\ndestination.unLocode(), limitations)
+activate gts #lightblue
+gts --> rs: transitPaths
+deactivate gts
+
+loop for each transitPath
+    rs -> rs: toItinerary(transitPath)
+    activate rs #lightblue
+    
+    loop for each transitEdge
+        rs -> vr: find(voyageNumber)
+        activate vr #lightblue
+        vr --> rs: voyage
+        deactivate vr
+
+        rs -> lr: find(fromUnLocode)
+        activate lr #lightblue
+        lr --> rs: fromLocation
+        deactivate lr
+
+        rs -> lr: find(toUnLocode)
+        activate lr #lightblue
+        lr --> rs: toLocation
+        deactivate lr
+
+        create leg
+        rs -> leg: new(voyage, fromLocation,\ntoLocation, fromDate, toDate)
+    end
+
+    create itin
+    rs -> itin: new(legs)
+    
+    rs -> rspec: isSatisfiedBy(itinerary)
+    activate rspec #lightpink
+    rspec --> rs: satisfied
+    deactivate rspec
+    deactivate rs
+end
+
+rs --> bs: itineraries
+deactivate rs
+
+[<-- bs: itineraries
+deactivate bs
+
+@enduml
+```
+Now let's regenerate both PNG and SVG files:
+
+```bash
+plantuml -tsvg *.puml && plantuml -tpng -scale 2 *.puml
+```
+I've fixed the issue by:
+1. Adding `Cargo` as a proper participant with the lightpink color (domain model)
+2. Updating the message calls to use the participant alias `c` instead of the undeclared `cargo`
+
+The diagram now correctly shows `Cargo` in lightpink color like the other domain model classes.
