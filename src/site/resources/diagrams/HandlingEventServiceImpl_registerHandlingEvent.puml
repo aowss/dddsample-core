@@ -5,7 +5,7 @@ skinparam sequenceMessageAlign center
 
 participant "HandlingEventServiceImpl" as hes #lightgreen
 participant "HandlingEventFactory" as hef #lightpink
-participant "HandlingEventRepository" as her #lightpink
+participant "HandlingEventRepositoryJPA" as her #lightblue
 participant "ApplicationEvents" as ae #lightgreen
 
 [-> hes: registerHandlingEvent(completionTime,\ntrackingId, voyageNumber,\nunLocode, type)
@@ -17,7 +17,7 @@ hef --> hes: event
 deactivate hef
 
 hes -> her: store(event)
-activate her #lightpink
+activate her #lightblue
 her --> hes
 deactivate her
 

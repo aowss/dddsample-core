@@ -4,8 +4,8 @@ skinparam defaultFontName Courier
 skinparam sequenceMessageAlign center
 
 participant "CargoInspectionServiceImpl" as cis #lightgreen
-participant "CargoRepository" as cr #lightpink
-participant "HandlingEventRepository" as her #lightpink
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "HandlingEventRepositoryJPA" as her #lightblue
 participant "Cargo" as c #lightpink
 participant "ApplicationEvents" as ae #lightgreen
 
@@ -13,12 +13,12 @@ participant "ApplicationEvents" as ae #lightgreen
 activate cis #lightgreen
 
 cis -> cr: find(trackingId)
-activate cr #lightpink
+activate cr #lightblue
 cr --> cis: cargo
 deactivate cr
 
 cis -> her: lookupHandlingHistoryOfCargo(trackingId)
-activate her #lightpink
+activate her #lightblue
 her --> cis: handlingHistory
 deactivate her
 
@@ -57,7 +57,7 @@ alt atDestination
 end
 
 cis -> cr: store(cargo)
-activate cr #lightpink
+activate cr #lightblue
 cr --> cis
 deactivate cr
 

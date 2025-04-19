@@ -4,14 +4,14 @@ skinparam defaultFontName Courier
 skinparam sequenceMessageAlign center
 
 participant "BookingServiceImpl" as bs #lightgreen
-participant "CargoRepository" as cr #lightpink
+participant "CargoRepositoryJPA" as cr #lightblue
 participant "RoutingService" as rs #lightyellow
 
 [-> bs: requestPossibleRoutesForCargo(trackingId)
 activate bs #lightgreen
 
 bs -> cr: find(trackingId)
-activate cr #lightpink
+activate cr #lightblue
 cr --> bs: cargo
 deactivate cr
 
