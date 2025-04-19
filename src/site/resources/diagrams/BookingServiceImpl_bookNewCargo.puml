@@ -1,0 +1,26 @@
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoFactory" as cf #lightpink
+participant "CargoRepository" as cr #lightpink
+
+[-> bs: bookNewCargo(originUnLocode,\ndestinationUnLocode,\narrivalDeadline)
+activate bs #lightgreen
+
+bs -> cf: createCargo(originUnLocode,\ndestinationUnLocode,\narrivalDeadline)
+activate cf #lightpink
+cf --> bs: cargo
+deactivate cf
+
+bs -> cr: store(cargo)
+activate cr #lightpink
+cr --> bs
+deactivate cr
+
+[<-- bs: trackingId
+deactivate bs
+
+@enduml 

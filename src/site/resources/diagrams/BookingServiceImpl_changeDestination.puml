@@ -1,0 +1,47 @@
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepository" as cr #lightpink
+participant "LocationRepository" as lr #lightpink
+participant "Cargo" as c #lightpink
+
+[-> bs: changeDestination(trackingId, unLocode)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightpink
+cr --> bs: cargo
+deactivate cr
+
+bs -> lr: find(unLocode)
+activate lr #lightpink
+lr --> bs: newDestination
+deactivate lr
+
+bs -> c: origin()
+activate c #lightpink
+c --> bs: origin
+deactivate c
+
+bs -> c: routeSpecification()
+activate c #lightpink
+c --> bs: specification
+deactivate c
+
+bs -> c: specifyNewRoute(routeSpecification)
+activate c #lightpink
+c --> bs
+deactivate c
+
+bs -> cr: store(cargo)
+activate cr #lightpink
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate bs
+
+@enduml 

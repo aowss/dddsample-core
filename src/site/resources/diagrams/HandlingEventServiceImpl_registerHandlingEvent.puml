@@ -1,0 +1,32 @@
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "HandlingEventServiceImpl" as hes #lightgreen
+participant "HandlingEventFactory" as hef #lightpink
+participant "HandlingEventRepository" as her #lightpink
+participant "ApplicationEvents" as ae #lightgreen
+
+[-> hes: registerHandlingEvent(completionTime,\ntrackingId, voyageNumber,\nunLocode, type)
+activate hes #lightgreen
+
+hes -> hef: createHandlingEvent(registrationTime,\ncompletionTime, trackingId,\nvoyageNumber, unLocode, type)
+activate hef #lightpink
+hef --> hes: event
+deactivate hef
+
+hes -> her: store(event)
+activate her #lightpink
+her --> hes
+deactivate her
+
+hes -> ae: cargoWasHandled(event)
+activate ae #lightgreen
+ae --> hes
+deactivate ae
+
+[<-- hes
+deactivate hes
+
+@enduml 

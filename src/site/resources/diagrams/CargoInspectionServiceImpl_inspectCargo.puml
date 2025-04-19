@@ -1,0 +1,67 @@
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "CargoInspectionServiceImpl" as cis #lightgreen
+participant "CargoRepository" as cr #lightpink
+participant "HandlingEventRepository" as her #lightpink
+participant "Cargo" as c #lightpink
+participant "ApplicationEvents" as ae #lightgreen
+
+[-> cis: inspectCargo(trackingId)
+activate cis #lightgreen
+
+cis -> cr: find(trackingId)
+activate cr #lightpink
+cr --> cis: cargo
+deactivate cr
+
+cis -> her: lookupHandlingHistoryOfCargo(trackingId)
+activate her #lightpink
+her --> cis: handlingHistory
+deactivate her
+
+cis -> c: deriveDeliveryProgress(handlingHistory)
+activate c #lightpink
+c --> cis
+deactivate c
+
+cis -> c: delivery()
+activate c #lightpink
+c --> cis: delivery
+deactivate c
+
+cis -> delivery: isMisdirected()
+activate delivery #lightpink
+delivery --> cis: misdirected
+deactivate delivery
+
+alt misdirected
+    cis -> ae: cargoWasMisdirected(cargo)
+    activate ae #lightgreen
+    ae --> cis
+    deactivate ae
+end
+
+cis -> delivery: isUnloadedAtDestination()
+activate delivery #lightpink
+delivery --> cis: atDestination
+deactivate delivery
+
+alt atDestination
+    cis -> ae: cargoHasArrived(cargo)
+    activate ae #lightgreen
+    ae --> cis
+    deactivate ae
+end
+
+cis -> cr: store(cargo)
+activate cr #lightpink
+cr --> cis
+deactivate cr
+
+[<-- cis
+deactivate cis
+
+@enduml 

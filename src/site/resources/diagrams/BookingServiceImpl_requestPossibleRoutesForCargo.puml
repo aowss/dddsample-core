@@ -1,0 +1,31 @@
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepository" as cr #lightpink
+participant "RoutingService" as rs #lightyellow
+
+[-> bs: requestPossibleRoutesForCargo(trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightpink
+cr --> bs: cargo
+deactivate cr
+
+bs -> cargo: routeSpecification()
+activate cargo #lightpink
+cargo --> bs: specification
+deactivate cargo
+
+bs -> rs: fetchRoutesForSpecification(specification)
+activate rs #lightyellow
+rs --> bs: itineraries
+deactivate rs
+
+[<-- bs: itineraries
+deactivate bs
+
+@enduml 
