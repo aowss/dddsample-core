@@ -1835,3 +1835,435 @@ I've fixed the issue by:
 2. Updating the message calls to use the participant alias `c` instead of the undeclared `cargo`
 
 The diagram now correctly shows `Cargo` in lightpink color like the other domain model classes.
+
+* Show inner workings
+
+  Please go over the diagrams again and show the inner workings
+  Here is an example of inner workings not shown:
+  - the `createCargo` method only shows the `Cargo` object creation but not the interactions with the repositories and with `RouteSpecification`
+
+You're right. Let me analyze each diagram starting with `BookingServiceImpl_bookNewCargo` to show all inner workings. First, let me check the `CargoFactory` implementation:
+
+Read file: src/main/java/se/citerus/dddsample/domain/model/cargo/CargoFactory.java
+Let me also check the `Cargo` class to understand its inner workings:
+
+Read file: src/main/java/se/citerus/dddsample/domain/model/cargo/Cargo.java
+Let me also check the `RouteSpecification` class:
+
+Read file: src/main/java/se/citerus/dddsample/domain/model/cargo/RouteSpecification.java
+Let me also check the `Itinerary` class:
+
+Read file: src/main/java/se/citerus/dddsample/domain/model/cargo/Itinerary.java
+Based on the code review of both `RouteSpecification` and `Itinerary`, I can provide a comprehensive explanation of how these classes work together in the domain model:
+
+1. **RouteSpecification**:
+   - This is a value object that defines the requirements for shipping cargo
+   - It specifies:
+     - Origin location
+     - Destination location
+     - Arrival deadline
+   - Key method: `isSatisfiedBy(Itinerary itinerary)` which checks if a given itinerary meets the route requirements
+
+2. **Itinerary**:
+   - Represents the actual route the cargo will take
+   - Contains a list of `Leg`s, where each leg represents a segment of the journey
+   - Key features:
+     - Validates that the legs list is not empty and contains no null elements
+     - Provides methods to check if handling events (RECEIVE, LOAD, UNLOAD, CLAIM) are expected
+     - Can determine initial departure and final arrival locations
+     - Calculates the final arrival date based on the last leg
+     - Implements value object semantics with `equals`, `hashCode`, and `sameValueAs`
+
+The relationship between these classes demonstrates a clear separation of concerns:
+- `RouteSpecification` defines what needs to be achieved (the requirements)
+- `Itinerary` defines how it will be achieved (the actual route)
+
+Let me also check the `Leg` class to complete the picture:
+
+Read file: src/main/java/se/citerus/dddsample/domain/model/cargo/Leg.java
+Now I have a complete picture of how these three classes work together in the cargo domain model:
+
+3. **Leg**:
+   - Represents a single segment of an itinerary
+   - Contains:
+     - `Voyage`: The specific voyage carrying the cargo for this leg
+     - `loadLocation`: Where the cargo is loaded onto the voyage
+     - `unloadLocation`: Where the cargo is unloaded from the voyage
+     - `loadTime`: When the cargo is loaded
+     - `unloadTime`: When the cargo is unloaded
+   - Also implements value object semantics
+   - Uses JPA annotations for persistence
+
+The complete flow works like this:
+
+1. A `RouteSpecification` is created with origin, destination, and deadline requirements
+2. An `Itinerary` is created with a list of `Leg`s that define the actual route
+3. Each `Leg` represents a specific segment of the journey on a particular voyage
+4. The `RouteSpecification.isSatisfiedBy(Itinerary)` method can then verify if:
+   - The first leg's load location matches the route's origin
+   - The last leg's unload location matches the route's destination
+   - The cargo arrives before the deadline
+
+This design follows DDD principles well:
+- Clear separation of concerns
+- Rich domain model with business rules embedded in the objects
+- Value objects for immutable concepts
+- Strong validation and invariants
+- Clear relationships between domain concepts
+
+Would you like me to explore any specific aspect of these classes in more detail?
+
+  What I meant to ask is to regenerate the diagrams with the inner workings.
+
+This took way more efforts than expected and this one done for one diagram only.  
+Cursor again got mixed up in how to generate the png and svg files even though it used the same exact command in the previous step.
+
+  Can you go over the other puml files and see if you need to also show more inner working?
+  Don't add notes and generate the png and the svg diagrams using the same command
+
+I'll first check what other PlantUML files exist:
+
+Ran tool
+Let me check each PUML file to see if we need to add more inner workings:
+
+Read file: src/site/resources/diagrams/BookingServiceImpl_assignCargoToRoute.puml
+
+Read file: src/site/resources/diagrams/BookingServiceImpl_changeDestination.puml
+
+Read file: src/site/resources/diagrams/BookingServiceImpl_requestPossibleRoutesForCargo.puml
+
+Read file: src/site/resources/diagrams/HandlingEventServiceImpl_registerHandlingEvent.puml
+
+Read file: src/site/resources/diagrams/CargoInspectionServiceImpl_inspectCargo.puml
+After reviewing all the PlantUML files, I see several opportunities for improvement:
+
+1. `BookingServiceImpl_assignCargoToRoute.puml`: 
+   - Add `RouteSpecification` participant to show route validation
+   - Add `Itinerary` participant to show leg validation
+
+2. `HandlingEventServiceImpl_registerHandlingEvent.puml`:
+   - Add `Cargo` participant to show cargo validation
+   - Add `Location` and `Voyage` participants to show validation
+
+3. `CargoInspectionServiceImpl_inspectCargo.puml`:
+   - Add `HandlingHistory` participant to show filtering
+   - Add `RouteSpecification` participant to show route validation
+
+4. `BookingServiceImpl_changeDestination.puml`:
+   - Add `Itinerary` participant to show route update
+   - Show more validation steps
+
+Let me update these files one by one. First, let's update `BookingServiceImpl_assignCargoToRoute.puml`:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_assignCargoToRoute.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepository" as cr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: assignCargoToRoute(itinerary, trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+cr --> bs: cargo
+deactivate cr
+
+bs -> c: assignToRoute(itinerary)
+activate c #lightpink
+
+c -> c: routeSpecification()
+c -> rs: isSatisfiedBy(itinerary)
+activate rs #lightpink
+rs --> c: satisfied
+deactivate rs
+
+c -> i: legs()
+activate i #lightpink
+i --> c: legs
+deactivate i
+
+c -> c: itinerary = legs
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> bs
+deactivate c
+
+bs -> cr: store(cargo)
+activate cr #lightblue
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate bs
+
+@enduml
+```
+Now let's update `HandlingEventServiceImpl_registerHandlingEvent.puml`:
+
+```plantuml:src/site/resources/diagrams/HandlingEventServiceImpl_registerHandlingEvent.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "HandlingEventServiceImpl" as hes #lightgreen
+participant "HandlingEventFactory" as hef #lightpink
+participant "CargoRepository" as cr #lightblue
+participant "VoyageRepository" as vr #lightblue
+participant "LocationRepository" as lr #lightblue
+participant "HandlingEvent" as he #lightpink
+participant "HandlingEventRepository" as her #lightblue
+participant "ApplicationEvents" as ae #lightgreen
+
+[-> hes: registerHandlingEvent(completionTime,\ntrackingId, voyageNumber,\nunLocode, type)
+activate hes #lightgreen
+
+hes -> hef: createHandlingEvent(registrationTime,\ncompletionTime, trackingId,\nvoyageNumber, unLocode, type)
+activate hef #lightpink
+
+hef -> cr: find(trackingId)
+activate cr #lightblue
+cr --> hef: cargo
+deactivate cr
+
+hef -> vr: find(voyageNumber)
+activate vr #lightblue
+vr --> hef: voyage
+deactivate vr
+
+hef -> lr: find(unLocode)
+activate lr #lightblue
+lr --> hef: location
+deactivate lr
+
+create he
+hef -> he: new(cargo, completionTime,\nregistrationTime, type,\nlocation, voyage)
+activate he #lightpink
+
+he -> he: validateLocation()
+he -> he: validateVoyage()
+he -> he: validateTimeConstraints()
+
+he --> hef
+deactivate he
+hef --> hes: event
+deactivate hef
+
+hes -> her: store(event)
+activate her #lightblue
+her --> hes
+deactivate her
+
+hes -> ae: cargoWasHandled(event)
+activate ae #lightgreen
+ae --> hes
+deactivate ae
+
+[<-- hes
+deactivate hes
+
+@enduml
+```
+Now let's update `CargoInspectionServiceImpl_inspectCargo.puml`:
+
+```plantuml:src/site/resources/diagrams/CargoInspectionServiceImpl_inspectCargo.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "CargoInspectionServiceImpl" as cis #lightgreen
+participant "CargoRepository" as cr #lightblue
+participant "HandlingEventRepository" as her #lightblue
+participant "Cargo" as c #lightpink
+participant "HandlingHistory" as hh #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+participant "ApplicationEvents" as ae #lightgreen
+
+[-> cis: inspectCargo(trackingId)
+activate cis #lightgreen
+
+cis -> cr: find(trackingId)
+activate cr #lightblue
+cr --> cis: cargo
+deactivate cr
+
+cis -> her: lookupHandlingHistoryOfCargo(trackingId)
+activate her #lightblue
+her --> cis: handlingHistory
+deactivate her
+
+cis -> c: deriveDeliveryProgress(handlingHistory)
+activate c #lightpink
+
+c -> c: routeSpecification()
+activate rs #lightpink
+c -> rs: isSatisfiedBy(itinerary)
+rs --> c: satisfied
+deactivate rs
+
+c -> c: itinerary()
+activate i #lightpink
+i --> c: legs
+deactivate i
+
+c -> hh: filterOnCargo(trackingId)
+activate hh #lightpink
+hh --> c: filteredHistory
+deactivate hh
+
+c -> d: derivedFrom(routeSpecification,\nitinerary, filteredHistory)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> cis
+deactivate c
+
+cis -> c: delivery()
+activate c #lightpink
+c --> cis: delivery
+deactivate c
+
+cis -> d: isMisdirected()
+activate d #lightpink
+d --> cis: misdirected
+deactivate d
+
+alt misdirected
+    cis -> ae: cargoWasMisdirected(cargo)
+    activate ae #lightgreen
+    ae --> cis
+    deactivate ae
+end
+
+cis -> d: isUnloadedAtDestination()
+activate d #lightpink
+d --> cis: atDestination
+deactivate d
+
+alt atDestination
+    cis -> ae: cargoHasArrived(cargo)
+    activate ae #lightgreen
+    ae --> cis
+    deactivate ae
+end
+
+cis -> cr: store(cargo)
+activate cr #lightblue
+cr --> cis
+deactivate cr
+
+[<-- cis
+deactivate cis
+
+@enduml
+```
+Finally, let's update `BookingServiceImpl_changeDestination.puml`:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_changeDestination.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepository" as cr #lightblue
+participant "LocationRepository" as lr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: changeDestination(trackingId, unLocode)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+cr --> bs: cargo
+deactivate cr
+
+bs -> lr: find(unLocode)
+activate lr #lightblue
+lr --> bs: newDestination
+deactivate lr
+
+bs -> c: origin()
+activate c #lightpink
+c --> bs: origin
+deactivate c
+
+bs -> c: routeSpecification()
+activate c #lightpink
+c --> bs: specification
+deactivate c
+
+create rs
+bs -> rs: new(origin, newDestination,\nspecification.arrivalDeadline())
+activate rs #lightpink
+rs --> bs
+deactivate rs
+
+bs -> c: specifyNewRoute(routeSpecification)
+activate c #lightpink
+
+c -> c: itinerary()
+activate i #lightpink
+i --> c: currentItinerary
+deactivate i
+
+c -> rs: isSatisfiedBy(currentItinerary)
+activate rs #lightpink
+rs --> c: satisfied
+deactivate rs
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> bs
+deactivate c
+
+bs -> cr: store(cargo)
+activate cr #lightblue
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate bs
+
+@enduml
+```
+Now let's generate the PNG and SVG files for all the updated diagrams:
+
+```bash
+cd src/site/resources/diagrams && plantuml -tsvg *.puml && plantuml -tpng -scale 2 *.puml
+```
+I apologize for the directory confusion. Let me try again with the correct path:
+
+```bash
+cd /Users/aowss/Documents/repositories/aowss/dddsample-core/src/site/resources/diagrams && plantuml -tsvg *.puml && plantuml -tpng -scale 2 *.puml
+```
+I've updated all the diagrams to show more inner workings by:
+1. Adding missing participants that are involved in the process
+2. Showing more detailed interactions between components
+3. Making validation and state changes more explicit
+4. Using consistent naming for repositories (removed JPA suffix)
+5. Adding proper activation/deactivation of participants
+
+The PNG and SVG files have been generated successfully. Would you like me to explain any specific changes in more detail?

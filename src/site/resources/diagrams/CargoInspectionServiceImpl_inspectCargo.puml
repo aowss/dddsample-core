@@ -4,9 +4,12 @@ skinparam defaultFontName Courier
 skinparam sequenceMessageAlign center
 
 participant "CargoInspectionServiceImpl" as cis #lightgreen
-participant "CargoRepositoryJPA" as cr #lightblue
-participant "HandlingEventRepositoryJPA" as her #lightblue
+participant "CargoRepository" as cr #lightblue
+participant "HandlingEventRepository" as her #lightblue
 participant "Cargo" as c #lightpink
+participant "HandlingHistory" as hh #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
 participant "Delivery" as d #lightpink
 participant "ApplicationEvents" as ae #lightgreen
 
@@ -27,9 +30,22 @@ cis -> c: deriveDeliveryProgress(handlingHistory)
 activate c #lightpink
 
 c -> c: routeSpecification()
-c -> c: itinerary()
+activate rs #lightpink
+c -> rs: isSatisfiedBy(itinerary)
+rs --> c: satisfied
+deactivate rs
 
-c -> d: derivedFrom(routeSpecification,\nitinerary, handlingHistory)
+c -> c: itinerary()
+activate i #lightpink
+i --> c: legs
+deactivate i
+
+c -> hh: filterOnCargo(trackingId)
+activate hh #lightpink
+hh --> c: filteredHistory
+deactivate hh
+
+c -> d: derivedFrom(routeSpecification,\nitinerary, filteredHistory)
 activate d #lightpink
 d --> c: delivery
 deactivate d
@@ -42,10 +58,10 @@ activate c #lightpink
 c --> cis: delivery
 deactivate c
 
-cis -> delivery: isMisdirected()
-activate delivery #lightpink
-delivery --> cis: misdirected
-deactivate delivery
+cis -> d: isMisdirected()
+activate d #lightpink
+d --> cis: misdirected
+deactivate d
 
 alt misdirected
     cis -> ae: cargoWasMisdirected(cargo)
@@ -54,10 +70,10 @@ alt misdirected
     deactivate ae
 end
 
-cis -> delivery: isUnloadedAtDestination()
-activate delivery #lightpink
-delivery --> cis: atDestination
-deactivate delivery
+cis -> d: isUnloadedAtDestination()
+activate d #lightpink
+d --> cis: atDestination
+deactivate d
 
 alt atDestination
     cis -> ae: cargoHasArrived(cargo)

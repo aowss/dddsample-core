@@ -4,11 +4,12 @@ skinparam defaultFontName Courier
 skinparam sequenceMessageAlign center
 
 participant "BookingServiceImpl" as bs #lightgreen
-participant "CargoRepositoryJPA" as cr #lightblue
-participant "LocationRepositoryJPA" as lr #lightblue
+participant "CargoRepository" as cr #lightblue
+participant "LocationRepository" as lr #lightblue
 participant "Cargo" as c #lightpink
-participant "Delivery" as d #lightpink
 participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
 
 [-> bs: changeDestination(trackingId, unLocode)
 activate bs #lightgreen
@@ -35,9 +36,22 @@ deactivate c
 
 create rs
 bs -> rs: new(origin, newDestination,\nspecification.arrivalDeadline())
+activate rs #lightpink
+rs --> bs
+deactivate rs
 
 bs -> c: specifyNewRoute(routeSpecification)
 activate c #lightpink
+
+c -> c: itinerary()
+activate i #lightpink
+i --> c: currentItinerary
+deactivate i
+
+c -> rs: isSatisfiedBy(currentItinerary)
+activate rs #lightpink
+rs --> c: satisfied
+deactivate rs
 
 c -> d: updateOnRouting(routeSpecification, itinerary)
 activate d #lightpink
