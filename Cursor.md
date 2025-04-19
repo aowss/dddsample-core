@@ -1541,3 +1541,186 @@ All diagrams maintain the color scheme:
 - lightblue for infrastructure
 
 The diagrams now show a more complete picture of what happens within the domain model when these operations are performed.
+
+* Refine the diagrams to use the routing service implementation instead of the interface
+
+  In the same way i was not interested in the interface for repository, i am not interested in the interface for the routing service, can you use the external routing service implementation?
+
+Yes, I'll replace the `RoutingService` interface with its implementation from the infrastructure layer. Let me find the implementation first:
+
+Ran tool
+Great! I found the `ExternalRoutingService` implementation. Now I'll update the diagram that uses the routing service:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_requestPossibleRoutesForCargo.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "ExternalRoutingService" as rs #lightblue
+
+[-> bs: requestPossibleRoutesForCargo(trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+cr --> bs: cargo
+deactivate cr
+
+bs -> cargo: routeSpecification()
+activate cargo #lightpink
+cargo --> bs: specification
+deactivate cargo
+
+bs -> rs: fetchRoutesForSpecification(specification)
+activate rs #lightblue
+rs --> bs: itineraries
+deactivate rs
+
+[<-- bs: itineraries
+deactivate bs
+
+@enduml
+```
+Now let's regenerate both PNG and SVG files:
+
+```bash
+plantuml -tsvg *.puml && plantuml -tpng -scale 2 *.puml
+```
+I've updated the `BookingServiceImpl_requestPossibleRoutesForCargo` diagram to:
+1. Replace `RoutingService` with `ExternalRoutingService`
+2. Change the color from lightyellow (domain/service) to lightblue (infrastructure) since `ExternalRoutingService` is in the infrastructure layer
+
+The files have been regenerated and you can find them in the `src/site/resources/diagrams` directory.
+
+  Please show the internal workings fo the external routing service implementation.
+
+I'll check the implementation of `ExternalRoutingService` and add its internal workings to the diagram:
+
+Read file: src/main/java/se/citerus/dddsample/infrastructure/routing/ExternalRoutingService.java
+Now I'll update the diagram to show the internal workings of the `ExternalRoutingService`:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_requestPossibleRoutesForCargo.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "ExternalRoutingService" as rs #lightblue
+participant "GraphTraversalService" as gts #lightblue
+participant "VoyageRepositoryJPA" as vr #lightblue
+participant "LocationRepositoryJPA" as lr #lightblue
+participant "RouteSpecification" as rspec #lightpink
+participant "Itinerary" as itin #lightpink
+participant "Leg" as leg #lightpink
+
+[-> bs: requestPossibleRoutesForCargo(trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+cr --> bs: cargo
+deactivate cr
+
+bs -> cargo: routeSpecification()
+activate cargo #lightpink
+cargo --> bs: specification
+deactivate cargo
+
+bs -> rs: fetchRoutesForSpecification(specification)
+activate rs #lightblue
+
+rs -> rspec: origin()
+activate rspec #lightpink
+rspec --> rs: origin
+deactivate rspec
+
+rs -> rspec: destination()
+activate rspec #lightpink
+rspec --> rs: destination
+deactivate rspec
+
+rs -> rspec: arrivalDeadline()
+activate rspec #lightpink
+rspec --> rs: deadline
+deactivate rspec
+
+rs -> gts: findShortestPath(origin.unLocode(),\ndestination.unLocode(), limitations)
+activate gts #lightblue
+gts --> rs: transitPaths
+deactivate gts
+
+loop for each transitPath
+    rs -> rs: toItinerary(transitPath)
+    activate rs #lightblue
+    
+    loop for each transitEdge
+        rs -> vr: find(voyageNumber)
+        activate vr #lightblue
+        vr --> rs: voyage
+        deactivate vr
+
+        rs -> lr: find(fromUnLocode)
+        activate lr #lightblue
+        lr --> rs: fromLocation
+        deactivate lr
+
+        rs -> lr: find(toUnLocode)
+        activate lr #lightblue
+        lr --> rs: toLocation
+        deactivate lr
+
+        create leg
+        rs -> leg: new(voyage, fromLocation,\ntoLocation, fromDate, toDate)
+    end
+
+    create itin
+    rs -> itin: new(legs)
+    
+    rs -> rspec: isSatisfiedBy(itinerary)
+    activate rspec #lightpink
+    rspec --> rs: satisfied
+    deactivate rspec
+    deactivate rs
+end
+
+rs --> bs: itineraries
+deactivate rs
+
+[<-- bs: itineraries
+deactivate bs
+
+@enduml
+```
+Now let's regenerate both PNG and SVG files:
+
+```bash
+plantuml -tsvg *.puml && plantuml -tpng -scale 2 *.puml
+```
+I've updated the `BookingServiceImpl_requestPossibleRoutesForCargo` diagram to show the complete internal workings of `ExternalRoutingService`. The changes include:
+
+1. Added new participants:
+   - `GraphTraversalService` (infrastructure layer - lightblue)
+   - `VoyageRepositoryJPA` (infrastructure layer - lightblue)
+   - `LocationRepositoryJPA` (infrastructure layer - lightblue)
+   - `RouteSpecification` (domain model - lightpink)
+   - `Itinerary` (domain model - lightpink)
+   - `Leg` (domain model - lightpink)
+
+2. Added the sequence of operations:
+   - Getting origin, destination, and deadline from `RouteSpecification`
+   - Calling external `GraphTraversalService` to find shortest paths
+   - For each transit path:
+     - Converting each transit edge to a leg by:
+       - Finding the voyage using `VoyageRepositoryJPA`
+       - Finding locations using `LocationRepositoryJPA`
+       - Creating a new `Leg` with the gathered information
+     - Creating a new `Itinerary` with the legs
+     - Validating the itinerary against the route specification
+
+The diagram now shows the complete translation process between the domain model and the external routing service's API, maintaining the color scheme to clearly show which layer each component belongs to.
+
