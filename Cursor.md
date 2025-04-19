@@ -2267,3 +2267,638 @@ I've updated all the diagrams to show more inner workings by:
 5. Adding proper activation/deactivation of participants
 
 The PNG and SVG files have been generated successfully. Would you like me to explain any specific changes in more detail?
+
+* Simplify layout
+
+  I noticed that you activate and deactivate lifelines multiple times in a single sequence diagram
+  I would prefer you to activate the lifeline when before first use and deactivate after last use so that we can see
+
+I rejected the first attempt
+
+  The lifeline were not coloured properly in you previous attempt and the expectation was to activate it at the same point as when it was first activated and deactivated at the same point as it was last deactivated. You chose to activate earlier and deactivate later.
+  Can you please retry?
+
+Yes, I understand now. I'll update the diagrams to:
+1. Keep the original colors (#lightgreen, #lightpink, #lightblue)
+2. Keep the original activation points (first use)
+3. Keep the original deactivation points (last use)
+4. Remove intermediate activations/deactivations
+
+Let me update each diagram:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_assignCargoToRoute.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: assignCargoToRoute(itinerary, trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+
+bs -> c: assignToRoute(itinerary)
+activate c #lightpink
+
+c -> c: routeSpecification()
+c -> rs: isSatisfiedBy(itinerary)
+activate rs #lightpink
+
+c -> i: legs()
+activate i #lightpink
+
+c -> c: itinerary = legs
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+
+c --> bs
+
+bs -> cr: store(cargo)
+cr --> bs
+
+[<-- bs
+
+deactivate d
+deactivate i
+deactivate rs
+deactivate c
+deactivate cr
+deactivate bs
+
+@enduml
+```
+
+```plantuml:src/site/resources/diagrams/HandlingEventServiceImpl_registerHandlingEvent.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "HandlingEventServiceImpl" as hes #lightgreen
+participant "HandlingEventFactory" as hef #lightpink
+participant "CargoRepository" as cr #lightblue
+participant "VoyageRepository" as vr #lightblue
+participant "LocationRepository" as lr #lightblue
+participant "HandlingEvent" as he #lightpink
+participant "HandlingEventRepositoryJPA" as her #lightblue
+participant "ApplicationEvents" as ae #lightgreen
+
+[-> hes: registerHandlingEvent(completionTime,\ntrackingId, voyageNumber,\nunLocode, type)
+activate hes #lightgreen
+
+hes -> hef: createHandlingEvent(registrationTime,\ncompletionTime, trackingId,\nvoyageNumber, unLocode, type)
+activate hef #lightpink
+
+hef -> cr: find(trackingId)
+activate cr #lightblue
+cr --> hef: cargo
+
+hef -> vr: find(voyageNumber)
+activate vr #lightblue
+vr --> hef: voyage
+
+hef -> lr: find(unLocode)
+activate lr #lightblue
+lr --> hef: location
+
+create he
+hef -> he: new(cargo, completionTime,\nregistrationTime, type,\nlocation, voyage)
+activate he #lightpink
+
+he -> he: validateLocation()
+he -> he: validateVoyage()
+he -> he: validateTimeConstraints()
+
+he --> hef
+hef --> hes: event
+
+hes -> her: store(event)
+activate her #lightblue
+her --> hes
+
+hes -> ae: cargoWasHandled(event)
+activate ae #lightgreen
+ae --> hes
+
+[<-- hes
+
+deactivate ae
+deactivate her
+deactivate he
+deactivate lr
+deactivate vr
+deactivate cr
+deactivate hef
+deactivate hes
+
+@enduml
+```
+
+```plantuml:src/site/resources/diagrams/CargoInspectionServiceImpl_inspectCargo.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "CargoInspectionServiceImpl" as cis #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "HandlingEventRepositoryJPA" as her #lightblue
+participant "Cargo" as c #lightpink
+participant "HandlingHistory" as hh #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+participant "ApplicationEvents" as ae #lightgreen
+
+[-> cis: inspectCargo(trackingId)
+activate cis #lightgreen
+
+cis -> cr: find(trackingId)
+activate cr #lightblue
+cr --> cis: cargo
+
+cis -> her: lookupHandlingHistoryOfCargo(trackingId)
+activate her #lightblue
+her --> cis: handlingHistory
+
+cis -> c: deriveDeliveryProgress(handlingHistory)
+activate c #lightpink
+
+c -> c: routeSpecification()
+c -> rs: isSatisfiedBy(itinerary)
+activate rs #lightpink
+
+c -> c: itinerary()
+c -> i: legs()
+activate i #lightpink
+
+c -> hh: filterOnCargo(trackingId)
+activate hh #lightpink
+hh --> c: filteredHistory
+
+c -> d: derivedFrom(routeSpecification,\nitinerary, filteredHistory)
+activate d #lightpink
+d --> c: delivery
+
+c --> cis
+
+cis -> c: delivery()
+c --> cis: delivery
+
+cis -> d: isMisdirected()
+d --> cis: misdirected
+
+alt misdirected
+    cis -> ae: cargoWasMisdirected(cargo)
+    activate ae #lightgreen
+    ae --> cis
+end
+
+cis -> d: isUnloadedAtDestination()
+d --> cis: atDestination
+
+alt atDestination
+    cis -> ae: cargoHasArrived(cargo)
+    ae --> cis
+end
+
+cis -> cr: store(cargo)
+cr --> cis
+
+[<-- cis
+
+deactivate ae
+deactivate d
+deactivate hh
+deactivate i
+deactivate rs
+deactivate c
+deactivate her
+deactivate cr
+deactivate cis
+
+@enduml
+```
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_changeDestination.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "LocationRepositoryJPA" as lr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: changeDestination(trackingId, unLocode)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+cr --> bs: cargo
+
+bs -> lr: find(unLocode)
+activate lr #lightblue
+lr --> bs: newDestination
+
+bs -> c: origin()
+activate c #lightpink
+c --> bs: origin
+
+bs -> c: routeSpecification()
+c --> bs: specification
+
+create rs
+bs -> rs: new(origin, newDestination,\nspecification.arrivalDeadline())
+activate rs #lightpink
+
+bs -> c: specifyNewRoute(routeSpecification)
+
+c -> c: itinerary()
+c -> i: legs()
+activate i #lightpink
+
+c -> rs: isSatisfiedBy(currentItinerary)
+rs --> c: satisfied
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+
+c --> bs
+
+bs -> cr: store(cargo)
+cr --> bs
+
+[<-- bs
+
+deactivate d
+deactivate i
+deactivate rs
+deactivate c
+deactivate lr
+deactivate cr
+deactivate bs
+
+@enduml
+```
+Now let's generate the updated diagrams:
+
+```bash
+cd /Users/aowss/Documents/repositories/aowss/dddsample-core/src/site/resources/diagrams && plantuml -tsvg *.puml && plantuml -tpng -scale 2 *.puml
+```
+I've updated all diagrams to:
+1. Keep original colors (#lightgreen, #lightpink, #lightblue)
+2. Maintain single activation spans from first use to last use
+3. Remove intermediate deactivations/reactivations
+4. Keep repository names consistent with original files (with JPA suffix)
+
+The lifelines now show a clearer picture of object lifecycles, with each object remaining active from its first interaction until its last use. Would you like me to explain any specific changes in more detail?
+
+  The coloring was corrected, the activation also but not the deactivation.
+
+Ah, I understand now. I need to keep the deactivations exactly where they were in the original files - right after each response arrow. Let me fix each diagram:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_assignCargoToRoute.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: assignCargoToRoute(itinerary, trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+cr --> bs: cargo
+deactivate cr
+
+bs -> c: assignToRoute(itinerary)
+activate c #lightpink
+
+c -> c: routeSpecification()
+c -> rs: isSatisfiedBy(itinerary)
+activate rs #lightpink
+rs --> c: satisfied
+deactivate rs
+
+c -> i: legs()
+activate i #lightpink
+i --> c: legs
+deactivate i
+
+c -> c: itinerary = legs
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> bs
+deactivate c
+
+bs -> cr: store(cargo)
+activate cr #lightblue
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate bs
+
+@enduml
+```
+
+```plantuml:src/site/resources/diagrams/HandlingEventServiceImpl_registerHandlingEvent.puml
+
+```
+
+  no, right after the last response arrow
+
+Ah, now I understand correctly. The deactivation should happen right after the LAST response arrow for each lifeline. Let me fix `BookingServiceImpl_assignCargoToRoute.puml`:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_assignCargoToRoute.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: assignCargoToRoute(itinerary, trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+
+bs -> c: assignToRoute(itinerary)
+activate c #lightpink
+
+c -> c: routeSpecification()
+c -> rs: isSatisfiedBy(itinerary)
+activate rs #lightpink
+rs --> c: satisfied
+deactivate rs
+
+c -> i: legs()
+activate i #lightpink
+i --> c: legs
+deactivate i
+
+c -> c: itinerary = legs
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> bs
+
+bs -> cr: store(cargo)
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate c
+deactivate bs
+
+@enduml
+```
+Now I understand - each lifeline should:
+1. Be activated on first use
+2. Stay active until its last response
+3. Be deactivated right after its last response arrow
+
+Would you like me to update the other diagrams with this same pattern?
+
+  you still got it wrong
+  you are deactivating too late
+  in your last attempt you deactivated c on line 47 but you should have deactivated it on line 41 as you hadd done before
+  please try again
+
+Ah, you're right! For each lifeline, I should deactivate right after its last response arrow. Looking at `BookingServiceImpl_assignCargoToRoute.puml`:
+
+- `cr`: Last response is on line 40 with `cr --> bs`, so deactivate right after
+- `c`: Last response is on line 38 with `c --> bs`, so deactivate right after
+- `rs`: Last response is on line 28 with `rs --> c`, so deactivate right after
+- `i`: Last response is on line 32 with `i --> c`, so deactivate right after
+- `d`: Last response is on line 36 with `d --> c`, so deactivate right after
+- `bs`: Last response is on line 43 with `[<-- bs`, so deactivate right after
+
+Let me fix it:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_assignCargoToRoute.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: assignCargoToRoute(itinerary, trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+
+bs -> c: assignToRoute(itinerary)
+activate c #lightpink
+
+c -> c: routeSpecification()
+c -> rs: isSatisfiedBy(itinerary)
+activate rs #lightpink
+rs --> c: satisfied
+deactivate rs
+
+c -> i: legs()
+activate i #lightpink
+i --> c: legs
+deactivate i
+
+c -> c: itinerary = legs
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> bs
+deactivate c
+
+bs -> cr: store(cargo)
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate bs
+
+@enduml
+```
+Would you like me to update the other diagrams with this same pattern - deactivating each lifeline immediately after its last response arrow?
+
+  Ah, you're right! For each lifeline, I should deactivate right after its last response arrow. Looking at `BookingServiceImpl_assignCargoToRoute.puml`:
+
+- `cr`: Last response is on line 40 with `cr --> bs`, so deactivate right after
+- `c`: Last response is on line 38 with `c --> bs`, so deactivate right after
+- `rs`: Last response is on line 28 with `rs --> c`, so deactivate right after
+- `i`: Last response is on line 32 with `i --> c`, so deactivate right after
+- `d`: Last response is on line 36 with `d --> c`, so deactivate right after
+- `bs`: Last response is on line 43 with `[<-- bs`, so deactivate right after
+
+Let me fix it:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_assignCargoToRoute.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: assignCargoToRoute(itinerary, trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+
+bs -> c: assignToRoute(itinerary)
+activate c #lightpink
+
+c -> c: routeSpecification()
+c -> rs: isSatisfiedBy(itinerary)
+activate rs #lightpink
+rs --> c: satisfied
+deactivate rs
+
+c -> i: legs()
+activate i #lightpink
+i --> c: legs
+deactivate i
+
+c -> c: itinerary = legs
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> bs
+deactivate c
+
+bs -> cr: store(cargo)
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate bs
+
+@enduml
+```
+Would you like me to update the other diagrams with this same pattern - deactivating each lifeline immediately after its last response arrow?
+
+Ah, you're right! For each lifeline, I should deactivate right after its last response arrow. Looking at `BookingServiceImpl_assignCargoToRoute.puml`:
+
+- `cr`: Last response is on line 40 with `cr --> bs`, so deactivate right after
+- `c`: Last response is on line 38 with `c --> bs`, so deactivate right after
+- `rs`: Last response is on line 28 with `rs --> c`, so deactivate right after
+- `i`: Last response is on line 32 with `i --> c`, so deactivate right after
+- `d`: Last response is on line 36 with `d --> c`, so deactivate right after
+- `bs`: Last response is on line 43 with `[<-- bs`, so deactivate right after
+
+Let me fix it:
+
+```plantuml:src/site/resources/diagrams/BookingServiceImpl_assignCargoToRoute.puml
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "Cargo" as c #lightpink
+participant "RouteSpecification" as rs #lightpink
+participant "Itinerary" as i #lightpink
+participant "Delivery" as d #lightpink
+
+[-> bs: assignCargoToRoute(itinerary, trackingId)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+
+bs -> c: assignToRoute(itinerary)
+activate c #lightpink
+
+c -> c: routeSpecification()
+c -> rs: isSatisfiedBy(itinerary)
+activate rs #lightpink
+rs --> c: satisfied
+deactivate rs
+
+c -> i: legs()
+activate i #lightpink
+i --> c: legs
+deactivate i
+
+c -> c: itinerary = legs
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> bs
+deactivate c
+
+bs -> cr: store(cargo)
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate bs
+
+@enduml
+```
+Would you like me to update the other diagrams with this same pattern - deactivating each lifeline immediately after its last response arrow?
+
+  Can you amend the bookNewCargo file also?
+
+  Nice changes, thanks
+  Can you do the same for requestPossibleRoutesForCargo?
+
+I had to do small modifications to the output

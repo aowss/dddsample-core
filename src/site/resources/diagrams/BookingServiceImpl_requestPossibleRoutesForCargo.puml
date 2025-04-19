@@ -52,7 +52,6 @@ deactivate gts
 
 loop for each transitPath
     rs -> rs: toItinerary(transitPath)
-    activate rs #lightblue
     
     loop for each transitEdge
         rs -> vr: find(voyageNumber)
@@ -63,28 +62,30 @@ loop for each transitPath
         rs -> lr: find(fromUnLocode)
         activate lr #lightblue
         lr --> rs: fromLocation
-        deactivate lr
 
         rs -> lr: find(toUnLocode)
-        activate lr #lightblue
         lr --> rs: toLocation
         deactivate lr
 
         create leg
         rs -> leg: new(voyage, fromLocation,\ntoLocation, fromDate, toDate)
+        activate leg #lightpink
+        leg --> rs
+        deactivate leg
     end
 
     create itin
     rs -> itin: new(legs)
+    activate itin #lightpink
+    itin --> rs
+    deactivate itin
     
     rs -> rspec: isSatisfiedBy(itinerary)
-    activate rspec #lightpink
     rspec --> rs: satisfied
-    deactivate rspec
-    deactivate rs
 end
 
 rs --> bs: itineraries
+deactivate rspec
 deactivate rs
 
 [<-- bs: itineraries

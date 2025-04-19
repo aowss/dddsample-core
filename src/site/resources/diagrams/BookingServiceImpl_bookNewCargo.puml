@@ -20,17 +20,14 @@ activate cf #lightpink
 cf -> lr: find(originUnLocode)
 activate lr #lightblue
 lr --> cf: origin
-deactivate lr
 
 cf -> lr: find(destinationUnLocode)
-activate lr #lightblue
 lr --> cf: destination
 deactivate lr
 
 cf -> cr: nextTrackingId()
 activate cr #lightblue
 cr --> cf: trackingId
-deactivate cr
 
 create rs
 cf -> rs: new(origin, destination, arrivalDeadline)
@@ -49,11 +46,11 @@ deactivate d
 
 c --> cf
 deactivate c
+
 cf --> bs: cargo
 deactivate cf
 
 bs -> cr: store(cargo)
-activate cr #lightblue
 cr --> bs
 deactivate cr
 
