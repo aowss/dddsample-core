@@ -7,6 +7,7 @@ participant "CargoInspectionServiceImpl" as cis #lightgreen
 participant "CargoRepositoryJPA" as cr #lightblue
 participant "HandlingEventRepositoryJPA" as her #lightblue
 participant "Cargo" as c #lightpink
+participant "Delivery" as d #lightpink
 participant "ApplicationEvents" as ae #lightgreen
 
 [-> cis: inspectCargo(trackingId)
@@ -24,6 +25,15 @@ deactivate her
 
 cis -> c: deriveDeliveryProgress(handlingHistory)
 activate c #lightpink
+
+c -> c: routeSpecification()
+c -> c: itinerary()
+
+c -> d: derivedFrom(routeSpecification,\nitinerary, handlingHistory)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
 c --> cis
 deactivate c
 

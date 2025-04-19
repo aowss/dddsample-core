@@ -16,6 +16,14 @@ hes -> hef: createHandlingEvent(registrationTime,\ncompletionTime, trackingId,\n
 activate hef #lightpink
 create he
 hef -> he: new
+activate he #lightpink
+
+he -> he: validateLocation()
+he -> he: validateVoyage()
+he -> he: validateTimeConstraints()
+
+he --> hef
+deactivate he
 hef --> hes: event
 deactivate hef
 

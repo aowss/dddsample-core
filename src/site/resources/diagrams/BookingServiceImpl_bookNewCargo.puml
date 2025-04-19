@@ -6,6 +6,7 @@ skinparam sequenceMessageAlign center
 participant "BookingServiceImpl" as bs #lightgreen
 participant "CargoFactory" as cf #lightpink
 participant "Cargo" as c #lightpink
+participant "Delivery" as d #lightpink
 participant "CargoRepositoryJPA" as cr #lightblue
 
 [-> bs: bookNewCargo(originUnLocode,\ndestinationUnLocode,\narrivalDeadline)
@@ -15,6 +16,15 @@ bs -> cf: createCargo(originUnLocode,\ndestinationUnLocode,\narrivalDeadline)
 activate cf #lightpink
 create c
 cf -> c: new
+activate c #lightpink
+
+c -> d: derivedFrom(routeSpecification,\nnull, HandlingHistory.EMPTY)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> cf
+deactivate c
 cf --> bs: cargo
 deactivate cf
 
