@@ -81,7 +81,19 @@
 <h1><a id="Infrastructure">Infrastructure</a></h1>
 <p>In addition to the three vertical layers, there is also the infrastructure. As the the picture shows, it supports all of the three layers in different ways, facilitating communication between the layers. In simple terms, the infrastructure consists of everything that exists independently of our application: external libraries, database engine, application server, messaging backend and so on.</p>
 <p>Also, we consider code and configuration files that glues the other layers to the infrastructure as part of the infrastructure layer. Looking for example at the persistence aspect, the database schema definition, Hibernate configuration and mapping files and implementations of the repository interfaces are part of the infrastructure layer.</p>
-<p>While it can be tricky to give a solid definition of what kind of code belongs to the infrastructure layer for any given situation, it should be possible to completely stub out the infrastructure in pure Java unit/scenario tests and still be able to use the domain layer and possibly the application layer to work out the core business problems.</p></section>        </main>
+<p>While it can be tricky to give a solid definition of what kind of code belongs to the infrastructure layer for any given situation, it should be possible to completely stub out the infrastructure in pure Java unit/scenario tests and still be able to use the domain layer and possibly the application layer to work out the core business problems.</p></section><section>
+<h1><a id="Interactions">Interactions</a></h1>
+<p>The interactions between the layers is shown here.</p>
+<p>- The Application which drives the workflow is in light green.</p>
+<p>- The Domain which encapsulate the business logic is in light pink.</p>
+<p>- The Infrastructure which supports the other layers is in light blue.</p>
+<p>We chose not to show the Interfaces which handle the communication with other systems.</p>
+<p>We chose to only show the persistence part of the Infrastructure.</p><section><a id="Book_new_Cargo"></a>
+<h2>Book new Cargo</h2><figure><img src="diagrams/BookingServiceImpl_bookNewCargo.png" /></figure><section><a id="Assign_Cargo_to_Route"></a>
+<h3>Assign Cargo to Route</h3><figure><img src="diagrams/BookingServiceImpl_assignCargoToRoute.png" /></figure></section><section><a id="Change_Destination"></a>
+<h3>Change Destination</h3><figure><img src="diagrams/BookingServiceImpl_changeDestination.png" /></figure></section><section><a id="Request_Possible_Routes_for_Cargo"></a>
+<h3>Request Possible Routes for Cargo</h3><figure><img src="diagrams/BookingServiceImpl_requestPossibleRoutesForCargo.png" /></figure></section><section><a id="Inspect_Cargo"></a>
+<h3>Inspect Cargo</h3><figure><img src="diagrams/CargoInspectionServiceImpl_inspectCargo.png" /></figure></section></section></section>        </main>
       </div>
     </div>
     <hr/>
