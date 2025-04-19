@@ -1,0 +1,58 @@
+@startuml
+skinparam monochrome false
+skinparam defaultFontName Courier
+skinparam sequenceMessageAlign center
+
+participant "BookingServiceImpl" as bs #lightgreen
+participant "CargoRepositoryJPA" as cr #lightblue
+participant "LocationRepositoryJPA" as lr #lightblue
+participant "Cargo" as c #lightpink
+participant "Delivery" as d #lightpink
+participant "RouteSpecification" as rs #lightpink
+
+[-> bs: changeDestination(trackingId, unLocode)
+activate bs #lightgreen
+
+bs -> cr: find(trackingId)
+activate cr #lightblue
+cr --> bs: cargo
+deactivate cr
+
+bs -> lr: find(unLocode)
+activate lr #lightblue
+lr --> bs: newDestination
+deactivate lr
+
+bs -> c: origin()
+activate c #lightpink
+c --> bs: origin
+deactivate c
+
+bs -> c: routeSpecification()
+activate c #lightpink
+c --> bs: specification
+deactivate c
+
+create rs
+bs -> rs: new(origin, newDestination,\nspecification.arrivalDeadline())
+
+bs -> c: specifyNewRoute(routeSpecification)
+activate c #lightpink
+
+c -> d: updateOnRouting(routeSpecification, itinerary)
+activate d #lightpink
+d --> c: delivery
+deactivate d
+
+c --> bs
+deactivate c
+
+bs -> cr: store(cargo)
+activate cr #lightblue
+cr --> bs
+deactivate cr
+
+[<-- bs
+deactivate bs
+
+@enduml 
