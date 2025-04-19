@@ -9,7 +9,7 @@ participant "CargoRepository" as cr #lightblue
 participant "VoyageRepository" as vr #lightblue
 participant "LocationRepository" as lr #lightblue
 participant "HandlingEvent" as he #lightpink
-participant "HandlingEventRepository" as her #lightblue
+participant "HandlingEventRepositoryJPA" as her #lightblue
 participant "ApplicationEvents" as ae #lightgreen
 
 [-> hes: registerHandlingEvent(completionTime,\ntrackingId, voyageNumber,\nunLocode, type)
@@ -43,6 +43,7 @@ he -> he: validateTimeConstraints()
 
 he --> hef
 deactivate he
+
 hef --> hes: event
 deactivate hef
 
