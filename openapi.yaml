@@ -40,7 +40,7 @@ paths:
                   locations:
                     type: array
                     items:
-                      $ref: '#/components/schemas/LocationDTO'
+                      $ref: '#/components/schemas/Location'
                     example:
                       - unLocode: "USNYC"
                         name: "New York"
@@ -104,7 +104,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/CargoRoutingDTO'
+                  $ref: '#/components/schemas/CargoRouting'
 
   /admin/show:
     get:
@@ -126,7 +126,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CargoRoutingDTO'
+                $ref: '#/components/schemas/CargoRouting'
 
   /admin/selectItinerary:
     get:
@@ -150,7 +150,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/RouteCandidateDTO'
+                  $ref: '#/components/schemas/RouteCandidate'
 
   /admin/assignItinerary:
     post:
@@ -226,11 +226,11 @@ paths:
                 type: object
                 properties:
                   cargo:
-                    $ref: '#/components/schemas/CargoRoutingDTO'
+                    $ref: '#/components/schemas/CargoRouting'
                   locations:
                     type: array
                     items:
-                      $ref: '#/components/schemas/LocationDTO'
+                      $ref: '#/components/schemas/Location'
 
   /admin/changeDestination:
     post:
@@ -322,7 +322,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CargoTrackingDTO'
+                $ref: '#/components/schemas/CargoTracking'
         '404':
           description: Cargo not found
         '500':
@@ -351,7 +351,7 @@ paths:
 
 components:
   schemas:
-    LocationDTO:
+    Location:
       type: object
       properties:
         unLocode:
@@ -363,7 +363,7 @@ components:
           description: Name of the location
           example: "New York"
 
-    CargoRoutingDTO:
+    CargoRouting:
       type: object
       properties:
         trackingId:
@@ -388,7 +388,7 @@ components:
         legs:
           type: array
           items:
-            $ref: '#/components/schemas/LegDTO'
+            $ref: '#/components/schemas/Leg'
           example:
             - voyageNumber: "V001"
               from: "USNYC"
@@ -396,7 +396,7 @@ components:
               loadTime: "2024-01-01T10:00:00Z"
               unloadTime: "2024-01-15T14:00:00Z"
 
-    LegDTO:
+    Leg:
       type: object
       properties:
         voyageNumber:
@@ -417,13 +417,13 @@ components:
           format: date-time
           example: "2024-01-15T14:00:00Z"
 
-    RouteCandidateDTO:
+    RouteCandidate:
       type: object
       properties:
         legs:
           type: array
           items:
-            $ref: '#/components/schemas/LegDTO'
+            $ref: '#/components/schemas/Leg'
           example:
             - voyageNumber: "V001"
               from: "USNYC"
@@ -436,7 +436,7 @@ components:
               loadTime: "2024-01-11T08:00:00Z"
               unloadTime: "2024-01-12T16:00:00Z"
 
-    CargoTrackingDTO:
+    CargoTracking:
       type: object
       properties:
         trackingId:
@@ -458,16 +458,16 @@ components:
         events:
           type: array
           items:
-            $ref: '#/components/schemas/HandlingEventDTO'
+            $ref: '#/components/schemas/HandlingEvent'
           example:
-            - expected: true
+            - expected: false
               description: "Cargo loaded onto voyage V001"
               type: "LOAD"
               location: "USNYC"
               voyageNumber: "V001"
               completionTime: "2024-01-01T10:00:00Z"
 
-    HandlingEventDTO:
+    HandlingEvent:
       type: object
       properties:
         expected:
