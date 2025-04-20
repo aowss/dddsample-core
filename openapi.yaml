@@ -455,6 +455,10 @@ components:
         nextExpectedActivity:
           type: string
           example: "Unload in Rotterdam"
+        misdirected:
+          type: boolean
+          description: Indicates whether the cargo is currently off its intended route
+          example: false
         events:
           type: array
           items:
