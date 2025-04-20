@@ -8,9 +8,19 @@ servers:
   - url: /
     description: Base URL for all endpoints
 
+tags:
+  - name: Cargo Administration
+    description: Endpoints for managing cargo bookings and routing
+  - name: Cargo Tracking
+    description: Endpoints for tracking cargo status and history
+  - name: Handling Reports
+    description: Endpoints for submitting cargo handling events
+
 paths:
   /admin/registration:
     get:
+      tags:
+        - Cargo Administration
       summary: Get cargo registration form data
       description: Returns the list of shipping locations for cargo registration
       operationId: getRegistrationForm
@@ -33,6 +43,8 @@ paths:
 
   /admin/register:
     post:
+      tags:
+        - Cargo Administration
       summary: Register new cargo
       description: Books a new cargo with specified origin, destination and arrival deadline
       operationId: registerCargo
@@ -68,6 +80,8 @@ paths:
 
   /admin/list:
     get:
+      tags:
+        - Cargo Administration
       summary: List all cargos
       description: Returns a list of all registered cargos
       operationId: listCargos
@@ -83,6 +97,8 @@ paths:
 
   /admin/show:
     get:
+      tags:
+        - Cargo Administration
       summary: Get cargo details
       description: Returns detailed information about a specific cargo
       operationId: getCargoDetails
@@ -103,6 +119,8 @@ paths:
 
   /admin/selectItinerary:
     get:
+      tags:
+        - Cargo Administration
       summary: Get route candidates for cargo
       description: Returns possible routing options for a specific cargo
       operationId: getRouteCandidates
@@ -125,6 +143,8 @@ paths:
 
   /admin/assignItinerary:
     post:
+      tags:
+        - Cargo Administration
       summary: Assign itinerary to cargo
       description: Assigns a selected route to a cargo
       operationId: assignCargoToRoute
@@ -174,6 +194,8 @@ paths:
 
   /admin/pickNewDestination:
     get:
+      tags:
+        - Cargo Administration
       summary: Get available destinations for cargo
       description: Returns possible new destinations for changing a cargo's route
       operationId: getNewDestinations
@@ -201,6 +223,8 @@ paths:
 
   /admin/changeDestination:
     post:
+      tags:
+        - Cargo Administration
       summary: Change cargo destination
       description: Updates the destination of a cargo
       operationId: changeCargoDestination
@@ -229,6 +253,8 @@ paths:
 
   /track:
     get:
+      tags:
+        - Cargo Tracking
       summary: Get cargo tracking form
       description: Returns the form for tracking cargo
       operationId: getTrackingForm
@@ -240,6 +266,8 @@ paths:
               schema:
                 type: string
     post:
+      tags:
+        - Cargo Tracking
       summary: Track cargo
       description: Track a cargo by its tracking ID
       operationId: trackCargo
@@ -265,6 +293,8 @@ paths:
 
   /api/track/{trackingId}:
     get:
+      tags:
+        - Cargo Tracking
       summary: Track cargo (REST API)
       description: Get tracking information for a cargo via REST API
       operationId: trackCargoRest
@@ -289,6 +319,8 @@ paths:
 
   /handlingReport:
     post:
+      tags:
+        - Handling Reports
       summary: Submit handling report
       description: Submit a report for cargo handling events
       operationId: submitHandlingReport
