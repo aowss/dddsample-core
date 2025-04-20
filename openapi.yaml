@@ -1,0 +1,428 @@
+openapi: 3.1.0
+info:
+  title: DDD Sample API
+  description: API for cargo tracking, booking, routing and handling in the DDD Sample application
+  version: 1.0.0
+
+servers:
+  - url: /
+    description: Base URL for all endpoints
+
+paths:
+  /admin/registration:
+    get:
+      summary: Get cargo registration form data
+      description: Returns the list of shipping locations for cargo registration
+      operationId: getRegistrationForm
+      responses:
+        '200':
+          description: List of shipping locations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  unlocodes:
+                    type: array
+                    items:
+                      type: string
+                  locations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LocationDTO'
+
+  /admin/register:
+    post:
+      summary: Register new cargo
+      description: Books a new cargo with specified origin, destination and arrival deadline
+      operationId: registerCargo
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - originUnlocode
+                - destinationUnlocode
+                - arrivalDeadline
+              properties:
+                originUnlocode:
+                  type: string
+                  description: UN/LOCODE of the origin location
+                destinationUnlocode:
+                  type: string
+                  description: UN/LOCODE of the destination location
+                arrivalDeadline:
+                  type: string
+                  format: date
+                  description: Deadline for cargo arrival (format dd/MM/yyyy)
+      responses:
+        '302':
+          description: Cargo registered successfully, redirects to cargo details
+          headers:
+            Location:
+              schema:
+                type: string
+                example: /admin/show?trackingId=ABC123
+
+  /admin/list:
+    get:
+      summary: List all cargos
+      description: Returns a list of all registered cargos
+      operationId: listCargos
+      responses:
+        '200':
+          description: List of cargos retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CargoRoutingDTO'
+
+  /admin/show:
+    get:
+      summary: Get cargo details
+      description: Returns detailed information about a specific cargo
+      operationId: getCargoDetails
+      parameters:
+        - name: trackingId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Tracking ID of the cargo
+      responses:
+        '200':
+          description: Cargo details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CargoRoutingDTO'
+
+  /admin/selectItinerary:
+    get:
+      summary: Get route candidates for cargo
+      description: Returns possible routing options for a specific cargo
+      operationId: getRouteCandidates
+      parameters:
+        - name: trackingId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Tracking ID of the cargo
+      responses:
+        '200':
+          description: Route candidates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteCandidateDTO'
+
+  /admin/assignItinerary:
+    post:
+      summary: Assign itinerary to cargo
+      description: Assigns a selected route to a cargo
+      operationId: assignCargoToRoute
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - trackingId
+                - legs
+              properties:
+                trackingId:
+                  type: string
+                legs:
+                  type: array
+                  items:
+                    type: object
+                    required:
+                      - voyageNumber
+                      - fromUnLocode
+                      - toUnLocode
+                      - fromDate
+                      - toDate
+                    properties:
+                      voyageNumber:
+                        type: string
+                      fromUnLocode:
+                        type: string
+                      toUnLocode:
+                        type: string
+                      fromDate:
+                        type: string
+                        format: date-time
+                      toDate:
+                        type: string
+                        format: date-time
+      responses:
+        '302':
+          description: Itinerary assigned successfully, redirects to cargo details
+          headers:
+            Location:
+              schema:
+                type: string
+                example: /admin/show?trackingId=ABC123
+
+  /admin/pickNewDestination:
+    get:
+      summary: Get available destinations for cargo
+      description: Returns possible new destinations for changing a cargo's route
+      operationId: getNewDestinations
+      parameters:
+        - name: trackingId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Tracking ID of the cargo
+      responses:
+        '200':
+          description: Available destinations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  cargo:
+                    $ref: '#/components/schemas/CargoRoutingDTO'
+                  locations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LocationDTO'
+
+  /admin/changeDestination:
+    post:
+      summary: Change cargo destination
+      description: Updates the destination of a cargo
+      operationId: changeCargoDestination
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - trackingId
+                - unlocode
+              properties:
+                trackingId:
+                  type: string
+                unlocode:
+                  type: string
+      responses:
+        '302':
+          description: Destination changed successfully, redirects to cargo details
+          headers:
+            Location:
+              schema:
+                type: string
+                example: /admin/show?trackingId=ABC123
+
+  /track:
+    get:
+      summary: Get cargo tracking form
+      description: Returns the form for tracking cargo
+      operationId: getTrackingForm
+      responses:
+        '200':
+          description: Tracking form retrieved successfully
+          content:
+            text/html:
+              schema:
+                type: string
+    post:
+      summary: Track cargo
+      description: Track a cargo by its tracking ID
+      operationId: trackCargo
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - trackingId
+              properties:
+                trackingId:
+                  type: string
+                  description: The tracking ID of the cargo to track
+      responses:
+        '200':
+          description: Cargo tracking information retrieved successfully
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /api/track/{trackingId}:
+    get:
+      summary: Track cargo (REST API)
+      description: Get tracking information for a cargo via REST API
+      operationId: trackCargoRest
+      parameters:
+        - name: trackingId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The tracking ID of the cargo to track
+      responses:
+        '200':
+          description: Cargo tracking information retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CargoTrackingDTO'
+        '404':
+          description: Cargo not found
+        '500':
+          description: Internal server error
+
+  /handlingReport:
+    post:
+      summary: Submit handling report
+      description: Submit a report for cargo handling events
+      operationId: submitHandlingReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandlingReport'
+      responses:
+        '201':
+          description: Handling report submitted successfully
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    LocationDTO:
+      type: object
+      properties:
+        unLocode:
+          type: string
+          description: UN/LOCODE of the location
+        name:
+          type: string
+          description: Name of the location
+
+    CargoRoutingDTO:
+      type: object
+      properties:
+        trackingId:
+          type: string
+        origin:
+          type: string
+        finalDestination:
+          type: string
+        arrivalDeadline:
+          type: string
+          format: date-time
+        misrouted:
+          type: boolean
+        routed:
+          type: boolean
+        legs:
+          type: array
+          items:
+            $ref: '#/components/schemas/LegDTO'
+
+    LegDTO:
+      type: object
+      properties:
+        voyageNumber:
+          type: string
+        from:
+          type: string
+        to:
+          type: string
+        loadTime:
+          type: string
+          format: date-time
+        unloadTime:
+          type: string
+          format: date-time
+
+    RouteCandidateDTO:
+      type: object
+      properties:
+        legs:
+          type: array
+          items:
+            $ref: '#/components/schemas/LegDTO'
+
+    CargoTrackingDTO:
+      type: object
+      properties:
+        trackingId:
+          type: string
+        statusText:
+          type: string
+        destination:
+          type: string
+        eta:
+          type: string
+          format: date-time
+        nextExpectedActivity:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/HandlingEventDTO'
+
+    HandlingEventDTO:
+      type: object
+      properties:
+        expected:
+          type: boolean
+        description:
+          type: string
+        type:
+          type: string
+        location:
+          type: string
+        voyageNumber:
+          type: string
+        completionTime:
+          type: string
+          format: date-time
+
+    HandlingReport:
+      type: object
+      required:
+        - completionTime
+        - trackingIds
+        - type
+        - unLocode
+      properties:
+        completionTime:
+          type: string
+          format: date-time
+          description: When the handling was completed
+        trackingIds:
+          type: array
+          items:
+            type: string
+          description: The tracking IDs of the cargos
+        type:
+          type: string
+          enum: [LOAD, UNLOAD, RECEIVE, CLAIM, CUSTOMS]
+          description: Type of handling
+        unLocode:
+          type: string
+          description: UN/LOCODE for the location
+        voyageNumber:
+          type: string
+          description: Voyage number (optional for some handling types) 
