@@ -36,10 +36,18 @@ paths:
                     type: array
                     items:
                       type: string
+                    example: ["USNYC", "NLRTM", "CNHKG"]
                   locations:
                     type: array
                     items:
                       $ref: '#/components/schemas/LocationDTO'
+                    example:
+                      - unLocode: "USNYC"
+                        name: "New York"
+                      - unLocode: "NLRTM"
+                        name: "Rotterdam"
+                      - unLocode: "CNHKG"
+                        name: "Hong Kong"
 
   /admin/register:
     post:
@@ -62,13 +70,16 @@ paths:
                 originUnlocode:
                   type: string
                   description: UN/LOCODE of the origin location
+                  example: "USNYC"
                 destinationUnlocode:
                   type: string
                   description: UN/LOCODE of the destination location
+                  example: "NLRTM"
                 arrivalDeadline:
                   type: string
                   format: date
                   description: Deadline for cargo arrival (format dd/MM/yyyy)
+                  example: "24/12/2024"
       responses:
         '302':
           description: Cargo registered successfully, redirects to cargo details
@@ -346,46 +357,65 @@ components:
         unLocode:
           type: string
           description: UN/LOCODE of the location
+          example: "USNYC"
         name:
           type: string
           description: Name of the location
+          example: "New York"
 
     CargoRoutingDTO:
       type: object
       properties:
         trackingId:
           type: string
+          example: "ABC123"
         origin:
           type: string
+          example: "USNYC"
         finalDestination:
           type: string
+          example: "NLRTM"
         arrivalDeadline:
           type: string
           format: date-time
+          example: "2024-12-24T12:00:00Z"
         misrouted:
           type: boolean
+          example: false
         routed:
           type: boolean
+          example: true
         legs:
           type: array
           items:
             $ref: '#/components/schemas/LegDTO'
+          example:
+            - voyageNumber: "V001"
+              from: "USNYC"
+              to: "NLRTM"
+              loadTime: "2024-01-01T10:00:00Z"
+              unloadTime: "2024-01-15T14:00:00Z"
 
     LegDTO:
       type: object
       properties:
         voyageNumber:
           type: string
+          example: "V001"
         from:
           type: string
+          example: "USNYC"
         to:
           type: string
+          example: "NLRTM"
         loadTime:
           type: string
           format: date-time
+          example: "2024-01-01T10:00:00Z"
         unloadTime:
           type: string
           format: date-time
+          example: "2024-01-15T14:00:00Z"
 
     RouteCandidateDTO:
       type: object
@@ -394,42 +424,71 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/LegDTO'
+          example:
+            - voyageNumber: "V001"
+              from: "USNYC"
+              to: "GBLON"
+              loadTime: "2024-01-01T10:00:00Z"
+              unloadTime: "2024-01-10T15:00:00Z"
+            - voyageNumber: "V002"
+              from: "GBLON"
+              to: "NLRTM"
+              loadTime: "2024-01-11T08:00:00Z"
+              unloadTime: "2024-01-12T16:00:00Z"
 
     CargoTrackingDTO:
       type: object
       properties:
         trackingId:
           type: string
+          example: "ABC123"
         statusText:
           type: string
+          example: "In transit"
         destination:
           type: string
+          example: "NLRTM"
         eta:
           type: string
           format: date-time
+          example: "2024-01-15T14:00:00Z"
         nextExpectedActivity:
           type: string
+          example: "Unload in Rotterdam"
         events:
           type: array
           items:
             $ref: '#/components/schemas/HandlingEventDTO'
+          example:
+            - expected: true
+              description: "Cargo loaded onto voyage V001"
+              type: "LOAD"
+              location: "USNYC"
+              voyageNumber: "V001"
+              completionTime: "2024-01-01T10:00:00Z"
 
     HandlingEventDTO:
       type: object
       properties:
         expected:
           type: boolean
+          example: true
         description:
           type: string
+          example: "Cargo loaded onto voyage V001"
         type:
           type: string
+          example: "LOAD"
         location:
           type: string
+          example: "USNYC"
         voyageNumber:
           type: string
+          example: "V001"
         completionTime:
           type: string
           format: date-time
+          example: "2024-01-01T10:00:00Z"
 
     HandlingReport:
       type: object
@@ -443,18 +502,23 @@ components:
           type: string
           format: date-time
           description: When the handling was completed
+          example: "2024-01-01T10:00:00Z"
         trackingIds:
           type: array
           items:
             type: string
           description: The tracking IDs of the cargos
+          example: ["ABC123", "XYZ789"]
         type:
           type: string
           enum: [LOAD, UNLOAD, RECEIVE, CLAIM, CUSTOMS]
           description: Type of handling
+          example: "LOAD"
         unLocode:
           type: string
           description: UN/LOCODE for the location
+          example: "USNYC"
         voyageNumber:
           type: string
-          description: Voyage number (optional for some handling types) 
+          description: Voyage number (optional for some handling types)
+          example: "V001" 
