@@ -56,6 +56,14 @@ For Windows users, use the included `mvnw.cmd` file instead, without the `./` bu
 
 The diagram was created with diagrams.net (formerly draw.io).
 
+## API documentation
+
+See the [openapi.yaml](/openapi.yaml) file for a complete API definition.
+
+The [HTML version](./API.html) is generated using [Redocly CLI](https://github.com/Redocly/redocly-cli):
+
+> `redocly build-docs openapi.yaml --theme.openapi.pathInMiddlePanel -o API.html`
+
 ## Using the HandlingReport REST API
 
 The HandlingReport API has one endpoint that takes a JSON request body:
@@ -67,5 +75,3 @@ You can use cURL to send the request using an JSON file for the body:
     curl --data-binary "@/path/to/project/src/test/resources/sampleHandlingReport.json" \
     -H 'Content-Type: application/json;charset=UTF-8' \
     http://localhost:8080/dddsample/handlingReport
-
-See the [api-docs.yaml](/api-docs.yaml) file for a complete API definition.
