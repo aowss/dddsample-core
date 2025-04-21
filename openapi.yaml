@@ -502,7 +502,8 @@ components:
           example: "Cargo loaded onto voyage V001"
         type:
           type: string
-          description: Type of handling event (LOAD, UNLOAD, RECEIVE, CLAIM, or CUSTOMS)
+          enum: [LOAD, UNLOAD, RECEIVE, CLAIM, CUSTOMS]
+          description: Type of handling event
           example: "LOAD"
         location:
           type: string
