@@ -368,25 +368,32 @@ components:
       properties:
         trackingId:
           type: string
+          description: Unique identifier for tracking the cargo
           example: "ABC123"
         origin:
           type: string
+          description: UN/LOCODE of the cargo's origin location
           example: "USNYC"
         finalDestination:
           type: string
+          description: UN/LOCODE of the cargo's final destination
           example: "NLRTM"
         arrivalDeadline:
           type: string
           format: date-time
+          description: Deadline by which the cargo must arrive at its destination
           example: "2024-12-24T12:00:00Z"
         misrouted:
           type: boolean
+          description: Indicates whether the cargo is not following its intended route
           example: false
         routed:
           type: boolean
+          description: Indicates whether the cargo has been assigned a route
           example: true
         legs:
           type: array
+          description: The sequence of carrier movements that will deliver the cargo
           items:
             $ref: '#/components/schemas/Leg'
           example:
@@ -401,20 +408,25 @@ components:
       properties:
         voyageNumber:
           type: string
+          description: Unique identifier of the voyage carrying the cargo
           example: "V001"
         from:
           type: string
+          description: UN/LOCODE of the location where the cargo is loaded
           example: "USNYC"
         to:
           type: string
+          description: UN/LOCODE of the location where the cargo is unloaded
           example: "NLRTM"
         loadTime:
           type: string
           format: date-time
+          description: When the cargo is scheduled to be loaded onto the carrier
           example: "2024-01-01T10:00:00Z"
         unloadTime:
           type: string
           format: date-time
+          description: When the cargo is scheduled to be unloaded from the carrier
           example: "2024-01-15T14:00:00Z"
 
     RouteCandidate:
@@ -441,19 +453,24 @@ components:
       properties:
         trackingId:
           type: string
+          description: Unique identifier for tracking the cargo
           example: "ABC123"
         statusText:
           type: string
+          description: Current status of the cargo in human-readable form
           example: "In transit"
         destination:
           type: string
+          description: UN/LOCODE of the cargo's current destination
           example: "NLRTM"
         eta:
           type: string
           format: date-time
+          description: Estimated time of arrival at the destination
           example: "2024-01-15T14:00:00Z"
         nextExpectedActivity:
           type: string
+          description: The next handling activity expected in the cargo's itinerary
           example: "Unload in Rotterdam"
         misdirected:
           type: boolean
@@ -461,6 +478,7 @@ components:
           example: false
         events:
           type: array
+          description: History of handling events for this cargo
           items:
             $ref: '#/components/schemas/HandlingEvent'
           example:
@@ -476,22 +494,28 @@ components:
       properties:
         expected:
           type: boolean
+          description: Indicates whether this event was expected according to the itinerary
           example: true
         description:
           type: string
+          description: Human-readable description of the handling event
           example: "Cargo loaded onto voyage V001"
         type:
           type: string
+          description: Type of handling event (LOAD, UNLOAD, RECEIVE, CLAIM, or CUSTOMS)
           example: "LOAD"
         location:
           type: string
+          description: UN/LOCODE of the location where the event occurred
           example: "USNYC"
         voyageNumber:
           type: string
+          description: Voyage number for LOAD and UNLOAD events, empty for others
           example: "V001"
         completionTime:
           type: string
           format: date-time
+          description: When the handling event was completed
           example: "2024-01-01T10:00:00Z"
 
     HandlingReport:
