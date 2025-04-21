@@ -351,13 +351,32 @@ paths:
 
 components:
   schemas:
+    TrackingId:
+      type: string
+      description: Unique identifier for tracking the cargo
+      example: "ABC123"
+
+    UnLocode:
+      type: string
+      description: UN/LOCODE of a location
+      example: "USNYC"
+
+    VoyageNumber:
+      type: string
+      description: Unique identifier of a voyage
+      example: "V001"
+
+    HandlingEventType:
+      type: string
+      enum: [LOAD, UNLOAD, RECEIVE, CLAIM, CUSTOMS]
+      description: Type of handling event
+      example: "LOAD"
+
     Location:
       type: object
       properties:
         unLocode:
-          type: string
-          description: UN/LOCODE of the location
-          example: "USNYC"
+          $ref: '#/components/schemas/UnLocode'
         name:
           type: string
           description: Name of the location
@@ -367,17 +386,11 @@ components:
       type: object
       properties:
         trackingId:
-          type: string
-          description: Unique identifier for tracking the cargo
-          example: "ABC123"
+          $ref: '#/components/schemas/TrackingId'
         origin:
-          type: string
-          description: UN/LOCODE of the cargo's origin location
-          example: "USNYC"
+          $ref: '#/components/schemas/UnLocode'
         finalDestination:
-          type: string
-          description: UN/LOCODE of the cargo's final destination
-          example: "NLRTM"
+          $ref: '#/components/schemas/UnLocode'
         arrivalDeadline:
           type: string
           format: date-time
@@ -407,17 +420,11 @@ components:
       type: object
       properties:
         voyageNumber:
-          type: string
-          description: Unique identifier of the voyage carrying the cargo
-          example: "V001"
+          $ref: '#/components/schemas/VoyageNumber'
         from:
-          type: string
-          description: UN/LOCODE of the location where the cargo is loaded
-          example: "USNYC"
+          $ref: '#/components/schemas/UnLocode'
         to:
-          type: string
-          description: UN/LOCODE of the location where the cargo is unloaded
-          example: "NLRTM"
+          $ref: '#/components/schemas/UnLocode'
         loadTime:
           type: string
           format: date-time
@@ -452,17 +459,13 @@ components:
       type: object
       properties:
         trackingId:
-          type: string
-          description: Unique identifier for tracking the cargo
-          example: "ABC123"
+          $ref: '#/components/schemas/TrackingId'
         statusText:
           type: string
           description: Current status of the cargo in human-readable form
           example: "In transit"
         destination:
-          type: string
-          description: UN/LOCODE of the cargo's current destination
-          example: "NLRTM"
+          $ref: '#/components/schemas/UnLocode'
         eta:
           type: string
           format: date-time
@@ -501,18 +504,11 @@ components:
           description: Human-readable description of the handling event
           example: "Cargo loaded onto voyage V001"
         type:
-          type: string
-          enum: [LOAD, UNLOAD, RECEIVE, CLAIM, CUSTOMS]
-          description: Type of handling event
-          example: "LOAD"
+          $ref: '#/components/schemas/HandlingEventType'
         location:
-          type: string
-          description: UN/LOCODE of the location where the event occurred
-          example: "USNYC"
+          $ref: '#/components/schemas/UnLocode'
         voyageNumber:
-          type: string
-          description: Voyage number for LOAD and UNLOAD events, empty for others
-          example: "V001"
+          $ref: '#/components/schemas/VoyageNumber'
         completionTime:
           type: string
           format: date-time
@@ -535,19 +531,12 @@ components:
         trackingIds:
           type: array
           items:
-            type: string
+            $ref: '#/components/schemas/TrackingId'
           description: The tracking IDs of the cargos
           example: ["ABC123", "XYZ789"]
         type:
-          type: string
-          enum: [LOAD, UNLOAD, RECEIVE, CLAIM, CUSTOMS]
-          description: Type of handling
-          example: "LOAD"
+          $ref: '#/components/schemas/HandlingEventType'
         unLocode:
-          type: string
-          description: UN/LOCODE for the location
-          example: "USNYC"
+          $ref: '#/components/schemas/UnLocode'
         voyageNumber:
-          type: string
-          description: Voyage number (optional for some handling types)
-          example: "V001" 
+          $ref: '#/components/schemas/VoyageNumber' 
