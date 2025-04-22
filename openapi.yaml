@@ -9,6 +9,7 @@ x-tagGroups:
     tags:
       - REST - Cargo Tracking
       - REST - Handling Reports
+      - REST - Cargo Administration
   - name: Web APIs
     tags:
       - Web - Cargo Administration
@@ -27,6 +28,8 @@ tags:
     description: REST endpoints for tracking cargo status programmatically
   - name: REST - Handling Reports
     description: REST endpoints for submitting cargo handling events
+  - name: REST - Cargo Administration
+    description: REST endpoints for managing cargo bookings and routing
 
 paths:
   /admin/registration:
@@ -360,6 +363,188 @@ paths:
           description: Invalid request
         '500':
           description: Internal server error
+
+  /api/locations:
+    get:
+      tags:
+        - REST - Cargo Administration
+      summary: List available locations
+      description: Returns the list of all available shipping locations
+      operationId: getLocations
+      responses:
+        '200':
+          description: List of locations retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+
+  /api/cargos:
+    get:
+      tags:
+        - REST - Cargo Administration
+      summary: List all cargos
+      description: Returns a list of all registered cargos
+      operationId: listCargosRest
+      responses:
+        '200':
+          description: List of cargos retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CargoRouting'
+    post:
+      tags:
+        - REST - Cargo Administration
+      summary: Register new cargo
+      description: Books a new cargo with specified origin, destination and arrival deadline
+      operationId: registerCargoRest
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - originUnlocode
+                - destinationUnlocode
+                - arrivalDeadline
+              properties:
+                originUnlocode:
+                  $ref: '#/components/schemas/UnLocode'
+                destinationUnlocode:
+                  $ref: '#/components/schemas/UnLocode'
+                arrivalDeadline:
+                  type: string
+                  format: date-time
+                  description: Deadline for cargo arrival
+                  example: "2024-12-24T12:00:00Z"
+      responses:
+        '201':
+          description: Cargo registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CargoRouting'
+
+  /api/cargos/{trackingId}:
+    get:
+      tags:
+        - REST - Cargo Administration
+      summary: Get cargo details
+      description: Returns detailed information about a specific cargo
+      operationId: getCargoDetailsRest
+      parameters:
+        - name: trackingId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TrackingId'
+      responses:
+        '200':
+          description: Cargo details retrieved successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CargoRouting'
+        '404':
+          description: Cargo not found
+
+  /api/cargos/{trackingId}/routes:
+    get:
+      tags:
+        - REST - Cargo Administration
+      summary: Get route candidates
+      description: Returns possible routing options for a specific cargo
+      operationId: getRouteCandidatesRest
+      parameters:
+        - name: trackingId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TrackingId'
+      responses:
+        '200':
+          description: Route candidates retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RouteCandidate'
+        '404':
+          description: Cargo not found
+    post:
+      tags:
+        - REST - Cargo Administration
+      summary: Assign route to cargo
+      description: Assigns a selected route to a cargo
+      operationId: assignCargoToRouteRest
+      parameters:
+        - name: trackingId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TrackingId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Leg'
+      responses:
+        '200':
+          description: Route assigned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CargoRouting'
+        '404':
+          description: Cargo not found
+        '400':
+          description: Invalid route
+
+  /api/cargos/{trackingId}/destination:
+    put:
+      tags:
+        - REST - Cargo Administration
+      summary: Change cargo destination
+      description: Updates the destination of a cargo
+      operationId: changeCargoDestinationRest
+      parameters:
+        - name: trackingId
+          in: path
+          required: true
+          schema:
+            $ref: '#/components/schemas/TrackingId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - unlocode
+              properties:
+                unlocode:
+                  $ref: '#/components/schemas/UnLocode'
+      responses:
+        '200':
+          description: Destination changed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CargoRouting'
+        '404':
+          description: Cargo not found
+        '400':
+          description: Invalid destination
 
 components:
   schemas:
