@@ -112,12 +112,14 @@ public class CargoAdministrationRestController {
         }
     }
 
+    record Destination(String unLocode) {}
+
     @PutMapping("/cargos/{trackingId}/destination")
     public ResponseEntity<CargoRoutingDTO> changeDestination(
         @PathVariable String trackingId,
-        @RequestBody Map<String, String> request
+        @RequestBody Destination request
     ) {
-        String unLocode = request.get("unLocode");
+        String unLocode = request.unLocode();
         if (unLocode == null) {
             return ResponseEntity.badRequest().build();
         }
