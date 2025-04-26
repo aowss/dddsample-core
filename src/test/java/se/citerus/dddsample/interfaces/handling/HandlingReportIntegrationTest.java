@@ -70,7 +70,7 @@ public class HandlingReportIntegrationTest {
         HandlingEvent handlingEvent = handlingHistory.mostRecentlyCompletedEvent();
         assertThat(handlingEvent.cargo().trackingId().idString()).isEqualTo("ABC123");
         assertThat(handlingEvent)
-                .extracting("type", "location.unlocode")
+                .extracting("type", "location.unLocode")
                 .containsExactly(HandlingEvent.Type.CUSTOMS, "USDAL");
     }
 

@@ -117,13 +117,13 @@ public class CargoAdministrationRestController {
         @PathVariable String trackingId,
         @RequestBody Map<String, String> request
     ) {
-        String unlocode = request.get("unlocode");
-        if (unlocode == null) {
+        String unLocode = request.get("unLocode");
+        if (unLocode == null) {
             return ResponseEntity.badRequest().build();
         }
 
         try {
-            bookingServiceFacade.changeDestination(trackingId, unlocode);
+            bookingServiceFacade.changeDestination(trackingId, unLocode);
             CargoRoutingDTO cargo = bookingServiceFacade.loadCargoForRouting(trackingId);
             return ResponseEntity.ok(cargo);
         } catch (IllegalArgumentException e) {

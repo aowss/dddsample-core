@@ -35,18 +35,18 @@ public class HandlingEventFactory {
    * @param completionTime    when the event was completed, for example finished loading
    * @param trackingId        cargo tracking id
    * @param voyageNumber      voyage number
-   * @param unlocode          United Nations Location Code for the location of the event
+   * @param unLocode          United Nations Location Code for the location of the event
    * @param type              type of event
    * @throws UnknownVoyageException   if there's no voyage with this number
    * @throws UnknownCargoException    if there's no cargo with this tracking id
    * @throws UnknownLocationException if there's no location with this UN Locode
    * @return A handling event.
    */
-  public HandlingEvent createHandlingEvent(Instant registrationTime, Instant completionTime, TrackingId trackingId, VoyageNumber voyageNumber, UnLocode unlocode, HandlingEvent.Type type)
+  public HandlingEvent createHandlingEvent(Instant registrationTime, Instant completionTime, TrackingId trackingId, VoyageNumber voyageNumber, UnLocode unLocode, HandlingEvent.Type type)
     throws CannotCreateHandlingEventException {
     final Cargo cargo = findCargo(trackingId);
     final Voyage voyage = findVoyage(voyageNumber);
-    final Location location = findLocation(unlocode);
+    final Location location = findLocation(unLocode);
 
     try {
       if (voyage == null) {
@@ -78,10 +78,10 @@ public class HandlingEventFactory {
     return voyage;
   }
   
-  private Location findLocation(final UnLocode unlocode) throws UnknownLocationException {
-    final Location location = locationRepository.find(unlocode);
+  private Location findLocation(final UnLocode unLocode) throws UnknownLocationException {
+    final Location location = locationRepository.find(unLocode);
     if (location == null) {
-      throw new UnknownLocationException(unlocode);
+      throw new UnknownLocationException(unLocode);
     }
 
     return location;

@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  */
 public final class UnLocode implements ValueObject<UnLocode> {
 
-  private String unlocode;
+  private String unLocode;
 
   // Country code is exactly two letters.
   // Location code is usually three letters, but may contain the numbers 2-9 as well
@@ -30,14 +30,14 @@ public final class UnLocode implements ValueObject<UnLocode> {
     Validate.isTrue(VALID_PATTERN.matcher(countryAndLocation).matches(),
       countryAndLocation + " is not a valid UN/LOCODE (does not match pattern)");
 
-    this.unlocode = countryAndLocation.toUpperCase();
+    this.unLocode = countryAndLocation.toUpperCase();
   }
 
   /**
    * @return country code and location code concatenated, always upper case.
    */
   public String idString() {
-    return unlocode;
+    return unLocode;
   }
 
   @Override
@@ -52,12 +52,12 @@ public final class UnLocode implements ValueObject<UnLocode> {
 
   @Override
   public int hashCode() {
-    return unlocode.hashCode();
+    return unLocode.hashCode();
   }
 
   @Override
   public boolean sameValueAs(UnLocode other) {
-    return other != null && this.unlocode.equals(other.unlocode);
+    return other != null && this.unLocode.equals(other.unLocode);
   }
 
   @Override

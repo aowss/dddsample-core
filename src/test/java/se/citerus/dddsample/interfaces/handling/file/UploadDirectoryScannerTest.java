@@ -55,7 +55,7 @@ public class UploadDirectoryScannerTest {
                 "trackingId.id",
                 "voyageNumber.number",
                 "type",
-                "unLocode.unlocode"
+                "unLocode.unLocode"
         ).contains(exampleDate, "ABC123", "0101", HandlingEvent.Type.CUSTOMS, "SESTO");
         Stream<Path> files = Files.list(uploadDir.toPath());
         assertThat(files.count()).isEqualTo(0);

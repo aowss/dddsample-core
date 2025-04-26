@@ -20,7 +20,7 @@ public final class Location implements DomainEntity<Location> {
   private long id;
 
   @Column(nullable = false, unique = true, updatable = false)
-  private String unlocode;
+  private String unLocode;
 
   @Column(nullable = false)
   private String name;
@@ -43,13 +43,13 @@ public final class Location implements DomainEntity<Location> {
     Objects.requireNonNull(unLocode);
     Objects.requireNonNull(name);
     
-    this.unlocode = unLocode.idString();
+    this.unLocode = unLocode.idString();
     this.name = name;
   }
 
   // Used by JPA
   public Location(String unloCode, String name) {
-    this.unlocode = unloCode;
+    this.unLocode = unloCode;
     this.name = name;
   }
 
@@ -57,7 +57,7 @@ public final class Location implements DomainEntity<Location> {
    * @return UN Locode for this location.
    */
   public UnLocode unLocode() {
-    return new UnLocode(unlocode);
+    return new UnLocode(unLocode);
   }
 
   /**
@@ -68,7 +68,7 @@ public final class Location implements DomainEntity<Location> {
   }
 
   public String code() {
-    return unlocode;
+    return unLocode;
   }
 
   public long id() {
@@ -95,7 +95,7 @@ public final class Location implements DomainEntity<Location> {
 
   @Override
   public boolean sameIdentityAs(final Location other) {
-    return this.unlocode.equals(other.unlocode);
+    return this.unLocode.equals(other.unLocode);
   }
 
   /**
@@ -103,12 +103,12 @@ public final class Location implements DomainEntity<Location> {
    */
   @Override
   public int hashCode() {
-    return unlocode.hashCode();
+    return unLocode.hashCode();
   }
 
   @Override
   public String toString() {
-    return name + " [" + unlocode + "]";
+    return name + " [" + unLocode + "]";
   }
 
   Location() {

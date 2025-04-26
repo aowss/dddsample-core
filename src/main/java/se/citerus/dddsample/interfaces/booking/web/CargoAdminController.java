@@ -60,7 +60,7 @@ public final class CargoAdminController {
             unLocodeStrings.add(dto.getUnLocode());
         }
 
-        model.put("unlocodes", unLocodeStrings);
+        model.put("unLocodes", unLocodeStrings);
         model.put("locations", dtoList);
         return "admin/registrationForm";
     }
@@ -140,7 +140,7 @@ public final class CargoAdminController {
     @RequestMapping(value = "/changeDestination", method = RequestMethod.POST)
     public void changeDestination(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String trackingId = request.getParameter("trackingId");
-        String unLocode = request.getParameter("unlocode");
+        String unLocode = request.getParameter("unLocode");
         bookingServiceFacade.changeDestination(trackingId, unLocode);
         response.sendRedirect("show?trackingId=" + trackingId);
     }
