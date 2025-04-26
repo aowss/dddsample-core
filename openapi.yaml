@@ -262,11 +262,11 @@ paths:
               type: object
               required:
                 - trackingId
-                - unlocode
+                - unLocode
               properties:
                 trackingId:
                   type: string
-                unlocode:
+                unLocode:
                   type: string
       responses:
         '302':
@@ -530,9 +530,9 @@ paths:
             schema:
               type: object
               required:
-                - unlocode
+                - unLocode
               properties:
-                unlocode:
+                unLocode:
                   $ref: '#/components/schemas/UnLocode'
       responses:
         '200':
@@ -571,9 +571,14 @@ components:
 
     Location:
       type: object
+      required:
+        - unLocode
+        - name
       properties:
         unLocode:
-          $ref: '#/components/schemas/UnLocode'
+          type: string
+          description: UN/LOCODE of the location
+          example: "USNYC"
         name:
           type: string
           description: Name of the location
