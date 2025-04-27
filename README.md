@@ -40,7 +40,7 @@ Use this command to publish the site manually to the repository's GitHub pages:
 
 The site can then be accessed at [https://aowss.github.io/dddsample-core/](https://aowss.github.io/dddsample-core/).
 
-You should not have to do this since the pipeline is configured to publish the site on PR merge.
+You should not have to do this since the [pipeline is configured](./.github/workflows/site.yml) to publish the site on PR merge.
 
 ## How to run
 
@@ -49,6 +49,16 @@ To start the app using the included application server and in-process HSQL datab
     ./mvnw spring-boot:run
     
 For Windows users, use the included `mvnw.cmd` file instead, without the `./` but using the same arguments.
+
+## How to test
+
+### Integration tests
+
+We use [Testcontainers](https://testcontainers.com) and follow the approach described in [Getting started with Testcontainers in a Java Spring Boot Project](https://testcontainers.com/guides/testing-spring-boot-rest-api-using-testcontainers/) and in the [Spring Boot documentation](Getting started with Testcontainers in a Java Spring Boot Project).
+
+The DDL script is [`schema.sql`](./src/main/resources/schema.sql).  
+The initial data script is [`data.sql`](./src/main/resources/data.sql).
+
 
 ## Entity relationships
 

@@ -17,6 +17,9 @@ spring:
         url: jdbc:hsqldb:mem:dddsample
         username: sa
         password: ""
+    sql:
+        init:
+            mode: always
 
 jdbc:
     datasource-proxy:
@@ -26,3 +29,4 @@ jdbc:
             enable-logging: true
         multiline: false
         include-parameter-values: true
+
