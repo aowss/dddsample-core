@@ -1,19 +1,19 @@
--- Location table
-CREATE TABLE Location (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+-- Location TABLE IF NOT EXISTS
+CREATE TABLE IF NOT EXISTS Location (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     unLocode VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL
 );
 
--- Voyage table
-CREATE TABLE Voyage (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+-- Voyage TABLE IF NOT EXISTS
+CREATE TABLE IF NOT EXISTS Voyage (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     voyage_number VARCHAR(255) NOT NULL UNIQUE
 );
 
--- CarrierMovement table
-CREATE TABLE CarrierMovement (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+-- CarrierMovement TABLE IF NOT EXISTS
+CREATE TABLE IF NOT EXISTS CarrierMovement (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     arrival_location_id BIGINT NOT NULL,
     departure_location_id BIGINT NOT NULL,
     arrival_time TIMESTAMP NOT NULL,
@@ -24,9 +24,9 @@ CREATE TABLE CarrierMovement (
     FOREIGN KEY (voyage_id) REFERENCES Voyage(id)
 );
 
--- Cargo table (including embedded RouteSpecification and Delivery)
-CREATE TABLE Cargo (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+-- Cargo TABLE IF NOT EXISTS (including embedded RouteSpecification and Delivery)
+CREATE TABLE IF NOT EXISTS Cargo (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     tracking_id VARCHAR(255) UNIQUE NOT NULL,
     origin_id BIGINT,
     -- Route Specification fields
@@ -52,9 +52,9 @@ CREATE TABLE Cargo (
     FOREIGN KEY (last_handling_event_voyage_id) REFERENCES Voyage(id)
 );
 
--- Leg table
-CREATE TABLE Leg (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+-- Leg TABLE IF NOT EXISTS
+CREATE TABLE IF NOT EXISTS Leg (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     voyage_id BIGINT,
     load_location_id BIGINT NOT NULL,
     unload_location_id BIGINT NOT NULL,
@@ -67,9 +67,9 @@ CREATE TABLE Leg (
     FOREIGN KEY (cargo_id) REFERENCES Cargo(id)
 );
 
--- HandlingEvent table
-CREATE TABLE HandlingEvent (
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+-- HandlingEvent TABLE IF NOT EXISTS
+CREATE TABLE IF NOT EXISTS HandlingEvent (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     type VARCHAR(50) NOT NULL,
     completion_time TIMESTAMP NOT NULL,
     registration_time TIMESTAMP NOT NULL,
@@ -81,11 +81,11 @@ CREATE TABLE HandlingEvent (
     FOREIGN KEY (cargo_id) REFERENCES Cargo(id)
 );
 
--- Add indexes for frequently queried columns
-CREATE INDEX idx_cargo_tracking_id ON Cargo(tracking_id);
-CREATE INDEX idx_voyage_number ON Voyage(voyage_number);
-CREATE INDEX idx_location_unlocode ON Location(unLocode);
-CREATE INDEX idx_handling_event_cargo ON HandlingEvent(cargo_id);
-CREATE INDEX idx_handling_event_completion ON HandlingEvent(completion_time);
-CREATE INDEX idx_carrier_movement_voyage ON CarrierMovement(voyage_id);
-CREATE INDEX idx_leg_cargo ON Leg(cargo_id); 
+-- Add INDEX IF NOT EXISTSes for frequently queried columns
+CREATE INDEX IF NOT EXISTS idx_cargo_tracking_id ON Cargo(tracking_id);
+CREATE INDEX IF NOT EXISTS idx_voyage_number ON Voyage(voyage_number);
+CREATE INDEX IF NOT EXISTS idx_location_unlocode ON Location(unLocode);
+CREATE INDEX IF NOT EXISTS idx_handling_event_cargo ON HandlingEvent(cargo_id);
+CREATE INDEX IF NOT EXISTS idx_handling_event_completion ON HandlingEvent(completion_time);
+CREATE INDEX IF NOT EXISTS idx_carrier_movement_voyage ON CarrierMovement(voyage_id);
+CREATE INDEX IF NOT EXISTS idx_leg_cargo ON Leg(cargo_id); 
