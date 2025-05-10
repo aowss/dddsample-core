@@ -84,7 +84,7 @@ public final class CargoTrackingViewAdapter {
         args = new Object[] {getDisplayText(delivery.lastKnownLocation())};
         break;
       case ONBOARD_CARRIER:
-        args = new Object[] {delivery.currentVoyage().voyageNumber().idString()};
+        args = new Object[] {delivery.currentVoyage().voyageNumber().number()};
         break;
       case CLAIMED:
       case NOT_RECEIVED:
@@ -115,7 +115,7 @@ public final class CargoTrackingViewAdapter {
    * @return Cargo tracking id.
    */
   public String getTrackingId() {
-    return cargo.trackingId().idString();
+    return cargo.trackingId().id();
   }
 
   public String getEta() {
@@ -133,11 +133,11 @@ public final class CargoTrackingViewAdapter {
 
     String text = "Next expected activity is to ";
     HandlingEvent.Type type = activity.type();
-    if (type.sameValueAs(HandlingEvent.Type.LOAD)) {
+    if (type == HandlingEvent.Type.LOAD) {
         return
           text + type.name().toLowerCase() + " cargo onto voyage " + activity.voyage().voyageNumber() +
           " in " + activity.location().name();
-      } else if (type.sameValueAs(HandlingEvent.Type.UNLOAD)) {
+      } else if (type == HandlingEvent.Type.UNLOAD) {
         return
           text + type.name().toLowerCase() + " cargo off of " + activity.voyage().voyageNumber() +
           " in " + activity.location().name();
@@ -195,7 +195,7 @@ public final class CargoTrackingViewAdapter {
      */
     public String getVoyageNumber() {
       final Voyage voyage = handlingEvent.voyage();
-      return voyage.voyageNumber().idString();
+      return voyage.voyageNumber().number();
     }
 
     /**
@@ -212,7 +212,7 @@ public final class CargoTrackingViewAdapter {
         case LOAD:
         case UNLOAD:
           args = new Object[] {
-            handlingEvent.voyage().voyageNumber().idString(),
+            handlingEvent.voyage().voyageNumber().number(),
             handlingEvent.location().name(),
             handlingEvent.completionTime()
           };

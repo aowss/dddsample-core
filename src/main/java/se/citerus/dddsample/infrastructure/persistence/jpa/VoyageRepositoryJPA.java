@@ -12,7 +12,7 @@ import se.citerus.dddsample.domain.model.voyage.VoyageRepository;
 public interface VoyageRepositoryJPA extends CrudRepository<Voyage, Long>, VoyageRepository {
 
   default Voyage find(final VoyageNumber voyageNumber) {
-    return findByVoyageNumber(voyageNumber.idString());
+    return findByVoyageNumber(voyageNumber.number());
   }
 
   @Query("select v from Voyage v where v.voyageNumber = :voyageNumber")

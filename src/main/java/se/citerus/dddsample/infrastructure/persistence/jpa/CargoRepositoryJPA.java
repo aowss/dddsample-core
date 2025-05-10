@@ -16,7 +16,7 @@ import java.util.stream.StreamSupport;
 public interface CargoRepositoryJPA extends CrudRepository<Cargo, Long>, CargoRepository {
 
   default Cargo find(TrackingId trackingId) {
-    return findByTrackingId(trackingId.idString());
+    return findByTrackingId(trackingId.id());
   }
 
   @Query("select c from Cargo c where c.trackingId = :trackingId")

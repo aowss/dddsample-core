@@ -17,16 +17,16 @@ public class CargoRoutingDTOAssembler {
    */
   public CargoRoutingDTO toDTO(final Cargo cargo) {
     final CargoRoutingDTO dto = new CargoRoutingDTO(
-      cargo.trackingId().idString(),
-      cargo.origin().unLocode().idString(),
-      cargo.routeSpecification().destination().unLocode().idString(),
+      cargo.trackingId().id(),
+      cargo.origin().unLocode().unlocode(),
+      cargo.routeSpecification().destination().unLocode().unlocode(),
       cargo.routeSpecification().arrivalDeadline(),
-      cargo.delivery().routingStatus().sameValueAs(RoutingStatus.MISROUTED));
+      cargo.delivery().routingStatus() == RoutingStatus.MISROUTED);
     for (Leg leg : cargo.itinerary().legs()) {
       dto.addLeg(
-        leg.voyage().voyageNumber().idString(),
-        leg.loadLocation().unLocode().idString(),
-        leg.unloadLocation().unLocode().idString(),
+        leg.voyage().voyageNumber().number(),
+        leg.loadLocation().unLocode().unlocode(),
+        leg.unloadLocation().unLocode().unlocode(),
         leg.loadTime(),
         leg.unloadTime());
     }

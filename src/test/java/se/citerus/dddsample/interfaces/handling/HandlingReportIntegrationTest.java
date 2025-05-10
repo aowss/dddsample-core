@@ -68,7 +68,7 @@ public class HandlingReportIntegrationTest {
 
         HandlingHistory handlingHistory = repo.lookupHandlingHistoryOfCargo(new TrackingId("ABC123"));
         HandlingEvent handlingEvent = handlingHistory.mostRecentlyCompletedEvent();
-        assertThat(handlingEvent.cargo().trackingId().idString()).isEqualTo("ABC123");
+        assertThat(handlingEvent.cargo().trackingId().id()).isEqualTo("ABC123");
         assertThat(handlingEvent)
                 .extracting("type", "location.unlocode")
                 .containsExactly(HandlingEvent.Type.CUSTOMS, "USDAL");

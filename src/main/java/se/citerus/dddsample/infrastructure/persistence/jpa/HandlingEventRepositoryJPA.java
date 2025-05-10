@@ -20,7 +20,7 @@ public interface HandlingEventRepositoryJPA extends CrudRepository<HandlingEvent
   }
 
   default HandlingHistory lookupHandlingHistoryOfCargo(final TrackingId trackingId) {
-    return new HandlingHistory(getHandlingHistoryOfCargo(trackingId.idString()));
+    return new HandlingHistory(getHandlingHistoryOfCargo(trackingId.id()));
   }
 
   @Query("select he from HandlingEvent he where he.cargo.trackingId = :trackingId and he.location is not NULL")

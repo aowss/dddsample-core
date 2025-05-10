@@ -35,11 +35,11 @@ public class Voyage implements DomainEntity<Voyage> {
   @Transient
   public static final Voyage NONE = new Voyage(new VoyageNumber(""), Schedule.EMPTY);
 
-    public Voyage(final VoyageNumber voyageNumber, final Schedule schedule) {
+  public Voyage(final VoyageNumber voyageNumber, final Schedule schedule) {
     Objects.requireNonNull(voyageNumber, "Voyage number is required");
     Objects.requireNonNull(schedule, "Schedule is required");
 
-    this.voyageNumber = voyageNumber.idString();
+    this.voyageNumber = voyageNumber.number();
     this.carrierMovements = schedule.carrierMovements();
   }
 
@@ -75,7 +75,7 @@ public class Voyage implements DomainEntity<Voyage> {
 
   @Override
   public boolean sameIdentityAs(Voyage other) {
-    return other != null && this.voyageNumber().sameValueAs(other.voyageNumber());
+    return other != null && this.voyageNumber().equals(other.voyageNumber());
   }
 
   @Override

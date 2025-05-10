@@ -37,19 +37,19 @@ public final class JmsApplicationEventsImpl implements ApplicationEvents {
   public void cargoWasHandled(final HandlingEvent event) {
     final Cargo cargo = event.cargo();
     logger.info("Cargo was handled {}", cargo);
-    jmsOperations.send(cargoHandledQueue, session -> session.createTextMessage(cargo.trackingId().idString()));
+    jmsOperations.send(cargoHandledQueue, session -> session.createTextMessage(cargo.trackingId().id()));
   }
 
   @Override
   public void cargoWasMisdirected(final Cargo cargo) {
     logger.info("Cargo was misdirected {}", cargo);
-    jmsOperations.send(misdirectedCargoQueue, session -> session.createTextMessage(cargo.trackingId().idString()));
+    jmsOperations.send(misdirectedCargoQueue, session -> session.createTextMessage(cargo.trackingId().id()));
   }
 
   @Override
   public void cargoHasArrived(final Cargo cargo) {
     logger.info("Cargo has arrived {}", cargo);
-    jmsOperations.send(deliveredCargoQueue, session -> session.createTextMessage(cargo.trackingId().idString()));
+    jmsOperations.send(deliveredCargoQueue, session -> session.createTextMessage(cargo.trackingId().id()));
   }
 
   @Override

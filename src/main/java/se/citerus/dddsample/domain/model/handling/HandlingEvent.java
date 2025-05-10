@@ -7,7 +7,6 @@ import se.citerus.dddsample.domain.model.cargo.Cargo;
 import se.citerus.dddsample.domain.model.location.Location;
 import se.citerus.dddsample.domain.model.voyage.Voyage;
 import se.citerus.dddsample.domain.shared.DomainEvent;
-import se.citerus.dddsample.domain.shared.ValueObject;
 
 import java.time.Instant;
 import java.util.Objects;
@@ -62,7 +61,7 @@ public final class HandlingEvent implements DomainEvent<HandlingEvent> {
    * Handling event type. Either requires or prohibits a carrier movement
    * association, it's never optional.
    */
-  public enum Type implements ValueObject<Type> {
+  public enum Type {
     LOAD(true),
     UNLOAD(true),
     RECEIVE(false),
@@ -92,11 +91,6 @@ public final class HandlingEvent implements DomainEvent<HandlingEvent> {
      */
     public boolean prohibitsVoyage() {
       return !requiresVoyage();
-    }
-
-    @Override
-    public boolean sameValueAs(Type other) {
-      return this.equals(other);
     }
 
   }

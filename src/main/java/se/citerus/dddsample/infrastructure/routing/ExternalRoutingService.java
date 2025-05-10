@@ -52,8 +52,8 @@ public class ExternalRoutingService implements RoutingService {
 
     final List<TransitPath> transitPaths;
     transitPaths = graphTraversalService.findShortestPath(
-      origin.unLocode().idString(),
-      destination.unLocode().idString(),
+      origin.unLocode().unlocode(),
+      destination.unLocode().unlocode(),
       limitations
     );
 
