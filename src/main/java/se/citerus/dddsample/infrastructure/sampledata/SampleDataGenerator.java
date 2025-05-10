@@ -66,7 +66,8 @@ public class SampleDataGenerator  {
         tt.execute(new TransactionCallbackWithoutResult() {
             @Override
             protected void doInTransactionWithoutResult(TransactionStatus status) {
-                for (Location location : SampleLocations.getAll()) {
+                var locations = SampleLocations.getAll();
+                for (Location location : locations) {
                     locationRepository.store(location);
                 }
 
