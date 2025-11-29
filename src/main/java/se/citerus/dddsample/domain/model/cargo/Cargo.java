@@ -49,7 +49,7 @@ import java.util.Objects;
 public class Cargo implements DomainEntity<Cargo> {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
 
   @Column(name = "tracking_id", unique = true)

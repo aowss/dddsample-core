@@ -31,7 +31,7 @@ public interface CargoRepositoryJPA extends CrudRepository<Cargo, Long>, CargoRe
             .collect(Collectors.toList());
   }
 
-  @Query(value = "SELECT UPPER(SUBSTR(CAST(UUID() AS VARCHAR(38)), 0, 9)) AS id FROM (VALUES(0))", nativeQuery = true)
+  @Query(value = "SELECT UPPER(SUBSTR(CAST(gen_random_uuid() AS VARCHAR(38)), 0, 9)) AS id FROM (VALUES(0))", nativeQuery = true)
   String nextTrackingIdString();
 
   default TrackingId nextTrackingId() {

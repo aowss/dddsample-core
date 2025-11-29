@@ -1,6 +1,9 @@
 spring:
     dataSource:
         url: jdbc:hsqldb:mem:dddsample_test
+    sql:
+        init:
+            mode: always
     main:
         allow-bean-definition-overriding: true
 server:

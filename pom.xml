@@ -85,6 +85,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <commons-io.version>2.18.0</commons-io.version>
         <testcontainers.version>1.21.0</testcontainers.version>
+        <json.version>1.1.4</json.version>
     </properties>
 
     <dependencyManagement>
@@ -221,6 +222,18 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>postgresql</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.json</groupId>
+            <artifactId>javax.json-api</artifactId>
+            <version>${json.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish</groupId>
+            <artifactId>javax.json</artifactId>
+            <version>${json.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

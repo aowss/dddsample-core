@@ -78,16 +78,16 @@ public class DDDSampleApplicationContext {
         return new ExternalRoutingService(graphTraversalService, locationRepository, voyageRepository);
     }
 
-    @Bean
-    public SampleDataGenerator sampleDataGenerator(CargoRepository cargoRepository,
-                                                   VoyageRepository voyageRepository,
-                                                   LocationRepository locationRepository,
-                                                   HandlingEventRepository handlingEventRepository,
-                                                   PlatformTransactionManager platformTransactionManager) {
-        return new SampleDataGenerator(cargoRepository,
-            voyageRepository,
-            locationRepository,
-            handlingEventRepository,
-            platformTransactionManager);
-    }
+//    @Bean
+//    public SampleDataGenerator sampleDataGenerator(CargoRepository cargoRepository,
+//                                                   VoyageRepository voyageRepository,
+//                                                   LocationRepository locationRepository,
+//                                                   HandlingEventRepository handlingEventRepository,
+//                                                   PlatformTransactionManager platformTransactionManager) {
+//        return new SampleDataGenerator(cargoRepository,
+//            voyageRepository,
+//            locationRepository,
+//            handlingEventRepository,
+//            platformTransactionManager);
+//    }
 }

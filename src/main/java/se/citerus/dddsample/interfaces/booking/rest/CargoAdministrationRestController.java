@@ -16,6 +16,8 @@ import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 /**
  * REST API for cargo administration.
  * This is a REST facade for the booking service, providing a RESTful interface
@@ -49,7 +51,7 @@ public class CargoAdministrationRestController {
         }
     }
 
-    @PostMapping("/cargos")
+    @PostMapping(value="/cargos", consumes = APPLICATION_JSON_VALUE)
     public ResponseEntity<CargoRoutingDTO> registerCargo(@RequestBody CargoRegistrationRequest request) {
         try {
             String trackingId = bookingServiceFacade.bookNewCargo(

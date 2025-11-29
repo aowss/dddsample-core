@@ -20,7 +20,7 @@ public final class Location implements DomainEntity<Location> {
   private long id;
 
   @Column(nullable = false, unique = true, updatable = false)
-  private String unLocode;
+  private String unlocode;
 
   @Column(nullable = false)
   private String name;
@@ -35,21 +35,21 @@ public final class Location implements DomainEntity<Location> {
   /**
    * Package-level constructor, visible for test and sample data purposes.
    *
-   * @param unLocode UN Locode
+   * @param unlocode UN Locode
    * @param name     location name
    * @throws IllegalArgumentException if the UN Locode or name is null
    */
-  public Location(final UnLocode unLocode, final String name) {
-    Objects.requireNonNull(unLocode);
+  public Location(final UnLocode unlocode, final String name) {
+    Objects.requireNonNull(unlocode);
     Objects.requireNonNull(name);
     
-    this.unLocode = unLocode.idString();
+    this.unlocode = unlocode.idString();
     this.name = name;
   }
 
   // Used by JPA
   public Location(String unloCode, String name) {
-    this.unLocode = unloCode;
+    this.unlocode = unloCode;
     this.name = name;
   }
 
@@ -57,7 +57,7 @@ public final class Location implements DomainEntity<Location> {
    * @return UN Locode for this location.
    */
   public UnLocode unLocode() {
-    return new UnLocode(unLocode);
+    return new UnLocode(unlocode);
   }
 
   /**
@@ -68,7 +68,7 @@ public final class Location implements DomainEntity<Location> {
   }
 
   public String code() {
-    return unLocode;
+    return unlocode;
   }
 
   public long id() {
@@ -95,7 +95,7 @@ public final class Location implements DomainEntity<Location> {
 
   @Override
   public boolean sameIdentityAs(final Location other) {
-    return this.unLocode.equals(other.unLocode);
+    return this.unlocode.equals(other.unlocode);
   }
 
   /**
@@ -103,12 +103,12 @@ public final class Location implements DomainEntity<Location> {
    */
   @Override
   public int hashCode() {
-    return unLocode.hashCode();
+    return unlocode.hashCode();
   }
 
   @Override
   public String toString() {
-    return name + " [" + unLocode + "]";
+    return name + " [" + unlocode + "]";
   }
 
   Location() {

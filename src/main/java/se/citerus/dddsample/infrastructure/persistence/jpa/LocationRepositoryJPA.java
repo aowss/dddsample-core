@@ -13,11 +13,11 @@ import java.util.stream.StreamSupport;
 public interface LocationRepositoryJPA extends CrudRepository<Location, Long>, LocationRepository {
 
   default Location find(final UnLocode unLocode) {
-    return findByUnLoCode(unLocode.idString());
+    return findByUnLocode(unLocode.idString());
   }
 
-  @Query("select loc from Location loc where loc.unLocode = :unLocode")
-  Location findByUnLoCode(String unLocode);
+  @Query("select loc from Location loc where loc.unlocode = :unlocode")
+  Location findByUnLocode(String unlocode);
 
   @Override
   default List<Location> getAll() {

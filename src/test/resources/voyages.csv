@@ -1,0 +1,28 @@
+--INSERT INTO Voyage (id, voyage_number) VALUES (1, '0100S');
+--INSERT INTO Voyage (id, voyage_number) VALUES (2, '0200T');
+--INSERT INTO Voyage (id, voyage_number) VALUES (3, '0300A');
+--INSERT INTO Voyage (id, voyage_number) VALUES (4, '0301S');
+--INSERT INTO Voyage (id, voyage_number) VALUES (5, '0400S');
+voyageNumber, departureLocation, departureTime, arrivalLocation, arrivalTime
+0100S, SESTO, 2007-09-23T02:00:00Z, FIHEL, 2007-09-23T03:00:00Z
+V100, CNHKG, ).
+            addMovement(TOKYO, toDate("2009-03-03, toDate("2009-03-05")).
+            addMovement(NEWYORK, toDate("2009-03-06, toDate("2009-03-09")).
+            build();
+V200, TOKYO).
+            addMovement(NEWYORK, toDate("2009-03-06, toDate("2009-03-08")).
+            addMovement(CHICAGO, toDate("2009-03-10, toDate("2009-03-14")).
+            addMovement(STOCKHOLM, toDate("2009-03-14, toDate("2009-03-16")).
+            build();
+V300, TOKYO).
+            addMovement(ROTTERDAM, toDate("2009-03-08, toDate("2009-03-11")).
+            addMovement(HAMBURG, toDate("2009-03-11, toDate("2009-03-12")).
+            addMovement(MELBOURNE, toDate("2009-03-14, toDate("2009-03-18")).
+            addMovement(TOKYO, toDate("2009-03-19, toDate("2009-03-21")).
+            build();
+V400, HAMBURG).
+            addMovement(STOCKHOLM, toDate("2009-03-14, toDate("2009-03-15")).
+            addMovement(HELSINKI, toDate("2009-03-15, toDate("2009-03-16")).
+            addMovement(HAMBURG, toDate("2009-03-20, toDate("2009-03-22")).
+            build();
+

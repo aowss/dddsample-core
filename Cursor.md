@@ -7943,5 +7943,206 @@ The test-specific data (voyages, cargos, carrier movements, etc.) should be move
 
 Would you like me to show an example of how to refactor one of the existing tests to create its own test data instead of relying on the shared data?
 
-    yes
+    I have commented out most of the insert statements in `data.sql` to only keep the locations.
+    Can you refactor the `CargoAdministrationRestControllerIntegrationTest` to create its own test data instead of relying on the shared data?
 
+I'll help you refactor the `CargoAdministrationRestControllerIntegrationTest` to be self-contained with its own test data. Let me first check the current state of the test file:
+
+Read file: /Users/aowss/Documents/repositories/aowss/dddsample-core/src/test/java/se/citerus/dddsample/interfaces/booking/rest/CargoAdministrationRestControllerIntegrationTest.java
+Now let me check the data.sql file to see what location data is available:
+
+Read file: /Users/aowss/Documents/repositories/aowss/dddsample-core/src/main/resources/data.sql
+I'll now refactor the integration test to create its own test data. Here's what we need to do:
+
+1. Add necessary voyage data for routing
+2. Add test data setup in a `@BeforeEach` method
+3. Update the test assertions to match the test data
+4. Add proper response type checking
+
+Here's the refactored test:
+
+```java:/Users/aowss/Documents/repositories/aowss/dddsample-core/src/test/java/se/citerus/dddsample/interfaces/booking/rest/CargoAdministrationRestControllerIntegrationTest.java
+package se.citerus.dddsample.interfaces.booking.rest;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+import se.citerus.dddsample.interfaces.booking.facade.dto.CargoRoutingDTO;
+
+import java.time.Instant;
+import java.util.List;
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
+import static org.springframework.http.HttpMethod.PUT;
+
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+@Testcontainers
+class CargoAdministrationRestControllerIntegrationTest {
+
+    @Container
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16.2")
+            .withDatabaseName("dddsample")
+            .withUsername("test")
+            .withPassword("test");
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.username", postgres::getUsername);
+        registry.add("spring.datasource.password", postgres::getPassword);
+        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
+    }
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @BeforeEach
+    void setUp() {
+        // Insert test voyage
+        jdbcTemplate.update(
+            "INSERT INTO Voyage (id, voyage_number) VALUES (?, ?)",
+            1, "V100S"
+        );
+
+        // Insert carrier movements for the test voyage
+        jdbcTemplate.update(
+            "INSERT INTO CarrierMovement (id, departure_location_id, arrival_location_id, departure_time, arrival_time, voyage_id) " +
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            1, 12, 13, // From New York to Dallas
+            Instant.now().plusSeconds(3600),
+            Instant.now().plusSeconds(7200),
+            1
+        );
+
+        // Insert test cargo
+        jdbcTemplate.update(
+            "INSERT INTO Cargo (id, tracking_id, origin_id, spec_origin_id, spec_destination_id, spec_arrival_deadline, transport_status, routing_status) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            1, "ABC123", 12, 12, 13, // From New York to Dallas
+            Instant.now().plusSeconds(86400),
+            "IN_PORT", "ROUTED"
+        );
+
+        // Insert leg for the test cargo
+        jdbcTemplate.update(
+            "INSERT INTO Leg (id, voyage_id, load_location_id, unload_location_id, load_time, unload_time, cargo_id) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            1, 1, 12, 13,
+            Instant.now().plusSeconds(3600),
+            Instant.now().plusSeconds(7200),
+            1
+        );
+    }
+
+    @Test
+    void shouldChangeCargoDestination() {
+        // Given
+        String trackingId = "ABC123";
+        String newDestination = "SESTO";
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(Map.of("unLocode", newDestination), headers);
+
+        // When
+        ResponseEntity<CargoRoutingDTO> response = restTemplate.exchange(
+            "/api/cargos/{trackingId}/destination",
+            PUT,
+            request,
+            CargoRoutingDTO.class,
+            trackingId
+        );
+
+        // Then
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getFinalDestination()).isEqualTo(newDestination);
+    }
+
+    @Test
+    void shouldRegisterNewCargo() {
+        // Given
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        Map<String, String> requestBody = Map.of(
+            "originUnLocode", "USNYC",
+            "destinationUnLocode", "USDAL",
+            "arrivalDeadline", Instant.now().plusSeconds(86400).toString()
+        );
+        HttpEntity<Map<String, String>> request = new HttpEntity<>(requestBody, headers);
+
+        // When
+        ResponseEntity<CargoRoutingDTO> response = restTemplate.postForEntity(
+            "/api/cargos",
+            request,
+            CargoRoutingDTO.class
+        );
+
+        // Then
+        assertThat(response.getStatusCode().value()).isEqualTo(201);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody().getOrigin()).isEqualTo("USNYC");
+        assertThat(response.getBody().getFinalDestination()).isEqualTo("USDAL");
+    }
+
+    @Test
+    void shouldGetRouteCandidates() {
+        // Given
+        String trackingId = "ABC123";
+
+        // When
+        ResponseEntity<List> response = restTemplate.getForEntity(
+            "/api/cargos/{trackingId}/routes",
+            List.class,
+            trackingId
+        );
+
+        // Then
+        assertThat(response.getStatusCode().value()).isEqualTo(200);
+        assertThat(response.getBody()).isNotNull();
+        assertThat(response.getBody()).isNotEmpty();
+    }
+}
+```
+Key changes made to the integration test:
+
+1. **Test Data Setup**:
+    - Added `JdbcTemplate` for direct database access
+    - Created `@BeforeEach` method to set up test data before each test
+    - Added test voyage "V100S" with a carrier movement from New York to Dallas
+    - Added test cargo "ABC123" with appropriate routing information
+
+2. **Response Type Improvements**:
+    - Changed response types from `Void.class` to proper DTOs
+    - Added `CargoRoutingDTO` for proper response handling
+    - Updated assertions to verify response body contents
+
+3. **Request/Response Consistency**:
+    - Fixed field names to match API expectations (e.g., `unLocode` instead of `unlocode`)
+    - Updated location codes to match available data (USNYC, USDAL)
+    - Added more detailed assertions to verify response content
+
+4. **Test Data Independence**:
+    - Test now uses its own data instead of relying on shared data.sql
+    - Uses locations that are available from the remaining data.sql entries
+    - Creates a specific test voyage and cargo for testing
+
+The test is now self-contained and should work independently of the shared data.sql file. It uses only the location data from data.sql but creates its own voyages, carrier movements, cargo, and legs as needed for the tests.
+
+Would you like me to make any adjustments to this refactoring?
