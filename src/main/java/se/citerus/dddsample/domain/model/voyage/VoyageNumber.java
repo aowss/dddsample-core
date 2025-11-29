@@ -4,10 +4,10 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 
 import java.util.Objects;
 
-/**
- * Identifies a voyage.
- * 
- */
+/// Identifies a voyage.
+///
+/// A voyage number is a unique identifier for a carrier's journey
+/// from one location to another.
 public class VoyageNumber implements ValueObject<VoyageNumber> {
 
   private String number;

@@ -5,12 +5,14 @@ import se.citerus.dddsample.domain.shared.DomainEntity;
 
 import java.util.Objects;
 
-/**
- * A location is our model is stops on a journey, such as cargo
- * origin or destination, or carrier movement endpoints.
- * It is uniquely identified by a UN Locode.
- *
- */
+/// A location represents stops on a journey in the domain model.
+///
+/// Locations are used for:
+///
+/// - Cargo origin and destination points
+/// - Carrier movement endpoints
+///
+/// Each location is uniquely identified by a UN/LOCODE.
 @Entity(name = "Location")
 @Table(name = "Location")
 public final class Location implements DomainEntity<Location> {

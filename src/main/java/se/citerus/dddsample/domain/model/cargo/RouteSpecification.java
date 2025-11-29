@@ -14,11 +14,23 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 import java.time.Instant;
 import java.util.Objects;
 
-/**
- * Route specification. Describes where a cargo origin and destination is,
- * and the arrival deadline.
- * 
- */
+/// Route specification describes the customer's requirements for cargo transportation.
+///
+/// ## Components
+///
+/// A route specification contains:
+///
+/// - **Origin** - where the cargo journey begins
+/// - **Destination** - where the cargo must arrive
+/// - **Arrival deadline** - the latest acceptable arrival time
+///
+/// ## Validation
+///
+/// A route specification can validate if an itinerary satisfies the requirements:
+///
+/// - The itinerary must start at the specified origin
+/// - The itinerary must end at the specified destination
+/// - The itinerary's final arrival date must be before the arrival deadline
 @Embeddable
 public class RouteSpecification extends AbstractSpecification<Itinerary> implements ValueObject<RouteSpecification> {
 

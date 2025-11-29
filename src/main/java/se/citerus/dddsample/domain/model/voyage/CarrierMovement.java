@@ -10,9 +10,21 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 import java.time.Instant;
 
 
-/**
- * A carrier movement is a vessel voyage from one location to another.
- */
+/// A carrier movement represents a vessel voyage from one location to another.
+///
+/// ## Components
+///
+/// Each carrier movement defines:
+///
+/// - **Departure location** - where the voyage begins
+/// - **Arrival location** - where the voyage ends
+/// - **Departure time** - when the vessel departs
+/// - **Arrival time** - when the vessel arrives
+///
+/// ## Usage
+///
+/// Carrier movements are combined into a schedule to form a complete voyage.
+/// Multiple carrier movements in sequence represent a voyage with intermediate stops.
 @Entity(name = "CarrierMovement")
 @Table(name = "CarrierMovement")
 public final class CarrierMovement implements ValueObject<CarrierMovement> {

@@ -10,12 +10,21 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 
 import java.util.Objects;
 
-/**
- * A handling activity represents how and where a cargo can be handled,
- * and can be used to express predictions about what is expected to
- * happen to a cargo in the future.
- *
- */
+/// A handling activity represents how and where a cargo can be handled.
+///
+/// ## Purpose
+///
+/// HandlingActivity is used to express predictions about what is expected
+/// to happen to a cargo in the future, based on the current itinerary and
+/// handling history.
+///
+/// ## Components
+///
+/// A handling activity specifies:
+///
+/// - **Type** - the expected handling event type (LOAD, UNLOAD, RECEIVE, CLAIM, CUSTOMS)
+/// - **Location** - where the activity is expected to occur
+/// - **Voyage** - optionally, which voyage is involved (for LOAD/UNLOAD activities)
 @Embeddable
 public class HandlingActivity implements ValueObject<HandlingActivity> {
 

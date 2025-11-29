@@ -12,22 +12,28 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 import java.time.Instant;
 import java.util.Objects;
 
-/**
- * A HandlingEvent is used to register the event when, for instance,
- * a cargo is unloaded from a carrier at some location at a given time.
- * 
- * The HandlingEvent's are sent from different Incident Logging Applications
- * some time after the event occurred and contain information about the
- * {@link se.citerus.dddsample.domain.model.cargo.TrackingId}, {@link se.citerus.dddsample.domain.model.location.Location}, timestamp of the completion of the event,
- * and possibly, if applicable a {@link se.citerus.dddsample.domain.model.voyage.Voyage}.
- * 
- * This class is the only member, and consequently the root, of the HandlingEvent aggregate. 
- * 
- * HandlingEvent's could contain information about a {@link Voyage} and if so,
- * the event type must be either {@link Type#LOAD} or {@link Type#UNLOAD}.
- * 
- * All other events must be of {@link Type#RECEIVE}, {@link Type#CLAIM} or {@link Type#CUSTOMS}.
- */
+/// A HandlingEvent registers when a cargo is handled, for instance,
+/// when a cargo is unloaded from a carrier at some location at a given time.
+///
+/// ## Event Sources
+///
+/// HandlingEvents are sent from different Incident Logging Applications
+/// some time after the event occurred and contain information about:
+///
+/// - {@link se.citerus.dddsample.domain.model.cargo.TrackingId} - which cargo was handled
+/// - {@link se.citerus.dddsample.domain.model.location.Location} - where the event occurred
+/// - Completion time - when the event actually happened
+/// - Registration time - when the message was received
+/// - {@link se.citerus.dddsample.domain.model.voyage.Voyage} - optionally, if applicable
+///
+/// ## Aggregate Root
+///
+/// This class is the only member, and consequently the root, of the HandlingEvent aggregate.
+///
+/// ## Event Types and Voyage Requirements
+///
+/// - **Events requiring a voyage**: {@link Type#LOAD}, {@link Type#UNLOAD}
+/// - **Events prohibiting a voyage**: {@link Type#RECEIVE}, {@link Type#CLAIM}, {@link Type#CUSTOMS}
 @Entity(name = "HandlingEvent")
 @Table(name = "HandlingEvent")
 public final class HandlingEvent implements DomainEvent<HandlingEvent> {

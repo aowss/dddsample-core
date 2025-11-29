@@ -6,12 +6,21 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- * United nations location code.
- * 
- * http://www.unece.org/cefact/locode/
- * http://www.unece.org/cefact/locode/DocColumnDescription.htm#LOCODE
- */
+/// United Nations location code (UN/LOCODE).
+///
+/// ## Format
+///
+/// A UN/LOCODE consists of:
+///
+/// - **Country code**: exactly two letters (e.g., "US", "NL")
+/// - **Location code**: usually three letters, but may contain numbers 2-9 (e.g., "NYC", "RTM")
+///
+/// Examples: "USNYC" (New York), "NLRTM" (Rotterdam)
+///
+/// ## Standards
+///
+/// - [UN/LOCODE Standard](http://www.unece.org/cefact/locode/)
+/// - [Column Description](http://www.unece.org/cefact/locode/DocColumnDescription.htm#LOCODE)
 public final class UnLocode implements ValueObject<UnLocode> {
 
   private String unLocode;

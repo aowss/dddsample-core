@@ -10,10 +10,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * An itinerary.
- *
- */
+/// An itinerary represents the planned route for transporting cargo.
+///
+/// ## Structure
+///
+/// An itinerary consists of one or more legs, where each leg represents:
+///
+/// - A voyage from one location to another
+/// - Load and unload locations
+/// - Load and unload times
+///
+/// ## Validation
+///
+/// The itinerary can validate if a handling event is expected:
+///
+/// - RECEIVE events must occur at the first leg's load location
+/// - LOAD events must match a leg's load location and voyage
+/// - UNLOAD events must match a leg's unload location and voyage
+/// - CLAIM events must occur at the last leg's unload location
+/// - CUSTOMS events are always considered expected
 public class Itinerary implements ValueObject<Itinerary> {
 
   private List<Leg> legs = Collections.emptyList();

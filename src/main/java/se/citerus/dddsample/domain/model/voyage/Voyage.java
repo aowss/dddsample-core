@@ -9,9 +9,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * A Voyage.
- */
+/// A Voyage represents a carrier's journey from one location to another.
+///
+/// ## Characteristics
+///
+/// - Identified by a unique voyage number
+/// - Contains a schedule of carrier movements
+/// - Represents the actual transportation service offered by a carrier
+///
+/// ## Usage
+///
+/// Voyages are used to:
+///
+/// - Define available transportation routes
+/// - Match cargo routing requirements with carrier capabilities
+/// - Track cargo that is currently on board a carrier
 @Entity(name = "Voyage")
 @Table(name = "Voyage")
 public class Voyage implements DomainEntity<Voyage> {
