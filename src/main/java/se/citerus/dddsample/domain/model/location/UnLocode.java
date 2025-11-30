@@ -6,15 +6,24 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 import java.util.Objects;
 import java.util.regex.Pattern;
 
-/**
- * United nations location code.
- * 
- * http://www.unece.org/cefact/locode/
- * http://www.unece.org/cefact/locode/DocColumnDescription.htm#LOCODE
- */
+/// United Nations location code (UN/LOCODE).
+///
+/// ## Format
+///
+/// A UN/LOCODE consists of:
+///
+/// - **Country code**: exactly two letters (e.g., "US", "NL")
+/// - **Location code**: usually three letters, but may contain numbers 2-9 (e.g., "NYC", "RTM")
+///
+/// Examples: "USNYC" (New York), "NLRTM" (Rotterdam)
+///
+/// ## Standards
+///
+/// - [UN/LOCODE Standard](http://www.unece.org/cefact/locode/)
+/// - [Column Description](http://www.unece.org/cefact/locode/DocColumnDescription.htm#LOCODE)
 public final class UnLocode implements ValueObject<UnLocode> {
 
-  private String unlocode;
+  private String unLocode;
 
   // Country code is exactly two letters.
   // Location code is usually three letters, but may contain the numbers 2-9 as well
@@ -30,14 +39,14 @@ public final class UnLocode implements ValueObject<UnLocode> {
     Validate.isTrue(VALID_PATTERN.matcher(countryAndLocation).matches(),
       countryAndLocation + " is not a valid UN/LOCODE (does not match pattern)");
 
-    this.unlocode = countryAndLocation.toUpperCase();
+    this.unLocode = countryAndLocation.toUpperCase();
   }
 
   /**
    * @return country code and location code concatenated, always upper case.
    */
   public String idString() {
-    return unlocode;
+    return unLocode;
   }
 
   @Override
@@ -52,12 +61,12 @@ public final class UnLocode implements ValueObject<UnLocode> {
 
   @Override
   public int hashCode() {
-    return unlocode.hashCode();
+    return unLocode.hashCode();
   }
 
   @Override
   public boolean sameValueAs(UnLocode other) {
-    return other != null && this.unlocode.equals(other.unlocode);
+    return other != null && this.unLocode.equals(other.unLocode);
   }
 
   @Override

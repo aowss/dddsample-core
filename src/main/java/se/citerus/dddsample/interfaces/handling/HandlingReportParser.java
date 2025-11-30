@@ -27,11 +27,11 @@ public class HandlingReportParser {
   public static final String ISO_8601_FORMAT = "yyyy-MM-dd HH:mm";
   public static final SimpleDateFormat SIMPLE_DATE_FORMAT = new SimpleDateFormat(ISO_8601_FORMAT);
 
-  public static UnLocode parseUnLocode(final String unlocode) {
+  public static UnLocode parseUnLocode(final String unLocode) {
     try {
-      return new UnLocode(unlocode);
+      return new UnLocode(unLocode);
     } catch (IllegalArgumentException|NullPointerException e) {
-      throw new IllegalArgumentException("Failed to parse UNLO code: " + unlocode, e);
+      throw new IllegalArgumentException("Failed to parse UNLO code: " + unLocode, e);
     }
   }
 

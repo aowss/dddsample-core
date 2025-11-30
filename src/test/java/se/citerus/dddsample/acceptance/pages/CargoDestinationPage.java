@@ -20,7 +20,7 @@ public class CargoDestinationPage {
     }
 
     public CargoDetailsPage selectDestinationTo(String destination) {
-        WebElement destinationPicker = driver.findElement(By.name("unlocode"));
+        WebElement destinationPicker = driver.findElement(By.name("unLocode"));
         Select select = new Select(destinationPicker);
         select.selectByVisibleText(destination);
 

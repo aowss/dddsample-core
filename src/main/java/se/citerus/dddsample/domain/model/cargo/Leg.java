@@ -10,9 +10,22 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 
 import java.time.Instant;
 
-/**
- * An itinerary consists of one or more legs.
- */
+/// A leg represents a single segment of an itinerary.
+///
+/// ## Components
+///
+/// Each leg defines:
+///
+/// - **Voyage** - the carrier service used for this segment
+/// - **Load location** - where cargo is loaded onto the carrier
+/// - **Unload location** - where cargo is unloaded from the carrier
+/// - **Load time** - when cargo is scheduled to be loaded
+/// - **Unload time** - when cargo is scheduled to be unloaded
+///
+/// ## Usage
+///
+/// An itinerary consists of one or more legs that together form
+/// the complete route from origin to destination.
 @Entity(name = "Leg")
 @Table(name = "Leg")
 public class Leg implements ValueObject<Leg> {

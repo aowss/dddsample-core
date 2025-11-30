@@ -6,9 +6,19 @@ import se.citerus.dddsample.domain.shared.ValueObject;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/**
- * The handling history of a cargo.
- */
+/// The handling history of a cargo.
+///
+/// ## Purpose
+///
+/// HandlingHistory maintains a collection of all handling events
+/// that have occurred for one or more cargos.
+///
+/// ## Features
+///
+/// - Provides distinct events ordered by completion time
+/// - Can filter events for a specific cargo by tracking ID
+/// - Identifies the most recently completed event
+/// - Automatically removes duplicate registrations
 public class HandlingHistory implements ValueObject<HandlingHistory> {
 
     private final List<HandlingEvent> handlingEvents;

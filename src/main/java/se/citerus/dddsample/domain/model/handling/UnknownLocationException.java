@@ -4,14 +4,14 @@ import se.citerus.dddsample.domain.model.location.UnLocode;
 
 public class UnknownLocationException extends CannotCreateHandlingEventException {
 
-  private final UnLocode unlocode;
+  private final UnLocode unLocode;
 
-  public UnknownLocationException(final UnLocode unlocode) {
-    this.unlocode = unlocode;
+  public UnknownLocationException(final UnLocode unLocode) {
+    this.unLocode = unLocode;
   }
 
   @Override
   public String getMessage() {
-    return "No location with UN locode " + unlocode.idString() + " exists in the system";
+    return "No location with UN locode " + unLocode.idString() + " exists in the system";
   }
 }

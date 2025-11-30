@@ -45,7 +45,7 @@ public class HandlingReportParserTest {
     @ValueSource(strings = {"SESTO"})
     public void shouldReturnUnloCodeOnParsingValidUnloCode(String input) {
         UnLocode result = HandlingReportParser.parseUnLocode(input);
-        assertThat(result).isNotNull().extracting("unlocode").asString().contains(input);
+        assertThat(result).isNotNull().extracting("unLocode").asString().contains(input);
     }
 
     @ParameterizedTest

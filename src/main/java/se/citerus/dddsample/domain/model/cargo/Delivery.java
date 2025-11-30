@@ -16,11 +16,33 @@ import java.util.Objects;
 import static se.citerus.dddsample.domain.model.cargo.RoutingStatus.*;
 import static se.citerus.dddsample.domain.model.cargo.TransportStatus.*;
 
-/**
- * The actual transportation of the cargo, as opposed to
- * the customer requirement (RouteSpecification) and the plan (Itinerary). 
- *
- */
+/// The actual transportation status of the cargo, as opposed to
+/// the customer requirement ({@link RouteSpecification}) and the plan ({@link Itinerary}).
+///
+/// ## Purpose
+///
+/// Delivery represents the current state of cargo transportation, including:
+///
+/// - Current transport status (on board carrier, in port, claimed, etc.)
+/// - Routing status (routed, misrouted, not routed)
+/// - Last known location and current voyage
+/// - Estimated time of arrival
+/// - Next expected handling activity
+///
+/// ## Updates
+///
+/// The delivery status is updated:
+///
+/// - **Synchronously** when routing changes (route specification or itinerary changes)
+/// - **Asynchronously** when handling events are registered
+///
+/// ## Misdirection Rules
+///
+/// A cargo is considered misdirected if:
+///
+/// - It is in a location that's not in the itinerary
+/// - A cargo with no itinerary cannot be misdirected
+/// - A cargo that has received no handling events cannot be misdirected
 @Embeddable
 public class Delivery implements ValueObject<Delivery> {
 

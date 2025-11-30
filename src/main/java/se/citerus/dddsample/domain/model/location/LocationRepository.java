@@ -5,7 +5,7 @@ import java.util.List;
 public interface LocationRepository {
 
   /**
-   * Finds a location using given unlocode.
+   * Finds a location using given unLocode.
    *
    * @param unLocode UNLocode.
    * @return Location.

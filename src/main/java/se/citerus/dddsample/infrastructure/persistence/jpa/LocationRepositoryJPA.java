@@ -16,8 +16,8 @@ public interface LocationRepositoryJPA extends CrudRepository<Location, Long>, L
     return findByUnLoCode(unLocode.idString());
   }
 
-  @Query("select loc from Location loc where loc.unlocode = :unlocode")
-  Location findByUnLoCode(String unlocode);
+  @Query("select loc from Location loc where loc.unLocode = :unLocode")
+  Location findByUnLoCode(String unLocode);
 
   @Override
   default List<Location> getAll() {
