@@ -35,10 +35,10 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   @Transactional
-  public TrackingId bookNewCargo(final UnLocode originUnLocode,
-                                 final UnLocode destinationUnLocode,
+  public TrackingId bookNewCargo(final UnLocode origin,
+                                 final UnLocode destination,
                                  final Instant arrivalDeadline) {
-    Cargo cargo = cargoFactory.createCargo(originUnLocode, destinationUnLocode, arrivalDeadline);
+    Cargo cargo = cargoFactory.createCargo(origin, destination, arrivalDeadline);
 
     cargoRepository.store(cargo);
     logger.info("Booked new cargo with tracking id {}", cargo.trackingId().idString());
@@ -60,7 +60,7 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   @Transactional
-  public void assignCargoToRoute(final Itinerary itinerary, final TrackingId trackingId) {
+  public void assignCargoToRoute(final TrackingId trackingId, final Itinerary itinerary) {
     final Cargo cargo = cargoRepository.find(trackingId);
     if (cargo == null) {
       throw new IllegalArgumentException("Can't assign itinerary to non-existing cargo " + trackingId);
@@ -74,9 +74,9 @@ public class BookingServiceImpl implements BookingService {
 
   @Override
   @Transactional
-  public void changeDestination(final TrackingId trackingId, final UnLocode unLocode) {
+  public void changeDestination(final TrackingId trackingId, final UnLocode destination) {
     final Cargo cargo = cargoRepository.find(trackingId);
-    final Location newDestination = locationRepository.find(unLocode);
+    final Location newDestination = locationRepository.find(destination);
 
     final RouteSpecification routeSpecification = new RouteSpecification(
       cargo.origin(), newDestination, cargo.routeSpecification().arrivalDeadline()

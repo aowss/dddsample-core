@@ -42,6 +42,10 @@ The site can then be accessed at [https://aowss.github.io/dddsample-core/](https
 
 You should not have to do this since the pipeline is configured to publish the site on PR merge.
 
+Use this command to check the dependencies which have newer versions:
+
+    ./mvnw versions:display-dependency-updates
+
 ## How to run
 
 To start the app using the included application server and in-process HSQL database, run this command:

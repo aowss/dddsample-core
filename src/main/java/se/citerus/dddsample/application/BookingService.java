@@ -31,17 +31,18 @@ public interface BookingService {
   List<Itinerary> requestPossibleRoutesForCargo(TrackingId trackingId);
 
   /**
-   * @param itinerary itinerary describing the selected route
+   * Assigns a cargo to a route.
    * @param trackingId cargo tracking id
+   * @param itinerary itinerary describing the selected route
    */
-  void assignCargoToRoute(Itinerary itinerary, TrackingId trackingId);
+  void assignCargoToRoute(TrackingId trackingId, Itinerary itinerary);
 
   /**
    * Changes the destination of a cargo.
    *
    * @param trackingId cargo tracking id
-   * @param unLocode UN locode of new destination
+   * @param destination UN locode of new destination
    */
-  void changeDestination(TrackingId trackingId, UnLocode unLocode);
+  void changeDestination(TrackingId trackingId, UnLocode destination);
 
 }
